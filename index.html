@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>GREEN MART KAKINADA | Fresh Vegetables Online</title>
+  <meta name="description" content="Order fresh vegetables online from GREEN MART KAKINADA. Same-day delivery within 20 km of Kakinada. Farm-fresh prices, easy WhatsApp ordering.">
+  <meta name="keywords" content="vegetable shop online, fresh vegetables delivery Kakinada, buy vegetables near me, GREEN MART, local grocery Kakinada, WhatsApp order vegetables">
+  <meta name="author" content="GREEN MART KAKINADA">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://yourdomain.com/">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="GREEN MART KAKINADA – Fresh Veggies Delivered">
+  <meta property="og:description" content="Order fresh vegetables online. Best prices, same-day delivery within 20 km of Kakinada.">
+  <meta property="og:image" content="https://yourdomain.com/og-image.jpg">
+  <meta property="og:url" content="https://yourdomain.com/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Favicon (optional – replace with your own) -->
+  <link rel="icon" type="image/png" href="favicon.png">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-wrapper">
+    <header class="hero-header">
+      <div class="container">
+        <div class="brand">
+          <span class="leaf-icon">🌿</span>
+          <div class="brand-text">
+            <h1>GREEN MART <span>KAKINADA</span></h1>
+            <p class="tagline">Fresh Vegetables Delivered to Your Doorstep</p>
+          </div>
+        </div>
+        <div class="search-container">
+          <div class="search-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" placeholder="Search vegetables (English or Telugu)..." class="search-input">
+            <button id="clearSearch" class="clear-search">✖</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <div class="container two-column-layout">
+        <!-- LEFT COLUMN -->
+        <div class="products-area">
+          <!-- Delivery Zone -->
+          <div class="delivery-zone">
+            <div class="delivery-card">
+              <div class="bike-animation"><div class="bike"></div></div>
+              <div class="delivery-info">
+                <div class="radius-board">
+                  <span class="radius-badge">🎯 20 KM DELIVERY ZONE</span>
+                  <h2 class="city-name">KAKINADA</h2>
+                  <p class="zone-desc">We deliver fresh vegetables only within <strong>20 km radius</strong> from Kakinada city center.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Order Timings Banner -->
+          <div class="timings-banner">
+            <div class="timings-container">
+              <span class="clock-icon">⏰</span>
+              <div class="timings-text">
+                <p><strong>Order Timings:</strong> Morning 6:00 AM – 1:00 PM &nbsp;|&nbsp; Evening 4:00 PM – 9:00 PM</p>
+                <p class="live-status" id="orderStatusMessage">⌛ Loading...</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tabs -->
+          <div class="tabs-container">
+            <div class="tabs-nav" id="tabsNav"></div>
+            <div id="noResultsMessage" class="no-results" style="display: none;">😕 No vegetables match your search. Try a different keyword.</div>
+          </div>
+          <div id="tabsContent"></div>
+        </div>
+
+        <!-- RIGHT COLUMN: CART -->
+        <div class="cart-sidebar">
+          <div class="cart-panel">
+            <div class="cart-header">
+              <h3>🛒 Your Cart</h3>
+              <span id="cartCount" class="cart-count">0</span>
+            </div>
+            <div id="cartItems" class="cart-items"></div>
+            <div class="cart-footer">
+              <div class="cart-subtotal">Subtotal: <span id="cartSubtotal">₹0</span></div>
+              <div class="delivery-charge" id="deliveryChargeRow" style="display: none;">Delivery: <span id="deliveryChargeAmount">₹0</span></div>
+              <div class="cart-total">Total: <span id="cartTotal">₹0</span></div>
+              <button id="proceedToOrderBtn" class="proceed-btn">Proceed to Order</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Order Modal -->
+    <div id="orderModal" class="modal">
+      <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h3>📋 Delivery Details</h3>
+        <div class="modal-body">
+          <div class="input-group">
+            <label for="modalName">Full name</label>
+            <input type="text" id="modalName" placeholder="e.g. Rajesh Kumar">
+          </div>
+          <div class="input-group">
+            <label for="modalMobile">Mobile number (WhatsApp)</label>
+            <input type="tel" id="modalMobile" placeholder="e.g. 9876543210">
+          </div>
+          <div class="input-group">
+            <label for="modalAddress">Delivery address</label>
+            <textarea id="modalAddress" rows="3" placeholder="House / Flat No., Street, Landmark, City, Pincode"></textarea>
+          </div>
+          <button id="confirmOrderBtn" class="confirm-order-btn">📲 Confirm Order on WhatsApp</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success Popup -->
+    <div id="orderSuccessPopup" class="popup-overlay">
+      <div class="popup-card">
+        <div class="tick-icon">✅</div>
+        <h3>Order Placed Successfully!</h3>
+        <p>Your order has been sent via WhatsApp.<br>We will contact you shortly.</p>
+        <p class="cod-confirm">💵 Cash on Delivery only</p>
+        <button id="feedbackBtn" class="feedback-popup-btn">📝 Give Feedback</button>
+        <button id="closePopupBtn" class="close-popup">OK</button>
+      </div>
+    </div>
+
+    <footer class="footer-note">
+      <div class="container">
+        <p>🌾 Same-day delivery (within 20 km of Kakinada) • Pay on delivery available • Trusted local mart</p>
+        <button id="feedbackFooterBtn" class="feedback-footer-btn">📝 Share Your Experience</button>
+      </div>
+    </footer>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
