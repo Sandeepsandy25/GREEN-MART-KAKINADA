@@ -3,148 +3,275 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>GREEN MART KAKINADA | Fresh Vegetables Online</title>
-  <meta name="description" content="Order fresh vegetables online from GREEN MART KAKINADA. Same-day delivery within 20 km of Kakinada. Farm-fresh prices, easy WhatsApp ordering.">
-  <meta name="keywords" content="vegetable shop online, fresh vegetables delivery Kakinada, buy vegetables near me, GREEN MART, local grocery Kakinada, WhatsApp order vegetables">
-  <meta name="author" content="GREEN MART KAKINADA">
+  <title>Green Mart Kakinada | Fresh Vegetables Delivered</title>
+  <meta name="description" content="Order fresh vegetables online from Green Mart Kakinada. Same-day delivery within 20 km. Farm-fresh prices, easy WhatsApp ordering.">
+  <meta name="keywords" content="vegetable shop online, fresh vegetables delivery Kakinada, buy vegetables near me, grocery delivery">
+  <meta name="author" content="Green Mart Kakinada">
   <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://yourdomain.com/">
-  <meta name="google-site-verification" content="7q0ARlzkRKeaJNR1Xei_OYaqJ7A3OkaT8VWAGyJi0EM" />
-
-  <!-- Open Graph -->
-  <meta property="og:title" content="GREEN MART KAKINADA – Fresh Veggies Delivered">
-  <meta property="og:description" content="Order fresh vegetables online. Best prices, same-day delivery within 20 km of Kakinada.">
-  <meta property="og:image" content="https://yourdomain.com/og-image.jpg">
-  <meta property="og:url" content="https://yourdomain.com/">
+  
+  <meta property="og:title" content="Green Mart Kakinada – Fresh Veggies Delivered">
+  <meta property="og:description" content="Order fresh vegetables online. Same-day delivery within 20 km of Kakinada.">
   <meta property="og:type" content="website">
-  <meta name="twitter:card" content="summary_large_image">
-
-  <!-- Favicon (optional – replace with your own) -->
+  <meta property="og:url" content="https://yourdomain.com/">
+  <meta property="og:image" content="https://yourdomain.com/og-image.jpg">
+  
   <link rel="icon" type="image/png" href="favicon.png">
-
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="app-wrapper">
-    <header class="hero-header">
-      <div class="container">
-        <div class="brand">
-          <span class="leaf-icon">🌿</span>
-          <div class="brand-text">
-            <h1>GREEN MART <span>KAKINADA</span></h1>
-            <p class="tagline">Fresh Vegetables Delivered to Your Doorstep</p>
-          </div>
-        </div>
-        <div class="search-container">
-          <div class="search-wrapper">
-            <span class="search-icon">🔍</span>
-            <input type="text" id="searchInput" placeholder="Search vegetables (English or Telugu)..." class="search-input">
-            <button id="clearSearch" class="clear-search">✖</button>
-          </div>
-        </div>
-      </div>
-    </header>
 
-    <main class="main-content">
-      <div class="container two-column-layout">
-        <!-- LEFT COLUMN -->
-        <div class="products-area">
-          <!-- Delivery Zone -->
-          <div class="delivery-zone">
-            <div class="delivery-card">
-              <div class="bike-animation"><div class="bike"></div></div>
-              <div class="delivery-info">
-                <div class="radius-board">
-                  <span class="radius-badge">🎯 20 KM DELIVERY ZONE</span>
-                  <h2 class="city-name">KAKINADA</h2>
-                  <p class="zone-desc">We deliver fresh vegetables only within <strong>20 km radius</strong> from Kakinada city center.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Order Timings Banner -->
-          <div class="timings-banner">
-            <div class="timings-container">
-              <span class="clock-icon">⏰</span>
-              <div class="timings-text">
-                <p><strong>Order Timings:</strong> Morning 6:00 AM – 1:00 PM &nbsp;|&nbsp; Evening 4:00 PM – 9:00 PM</p>
-                <p class="live-status" id="orderStatusMessage">⌛ Loading...</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Tabs -->
-          <div class="tabs-container">
-            <div class="tabs-nav" id="tabsNav"></div>
-            <div id="noResultsMessage" class="no-results" style="display: none;">😕 No vegetables match your search. Try a different keyword.</div>
-          </div>
-          <div id="tabsContent"></div>
-        </div>
-
-        <!-- RIGHT COLUMN: CART -->
-        <div class="cart-sidebar">
-          <div class="cart-panel">
-            <div class="cart-header">
-              <h3>🛒 Your Cart</h3>
-              <span id="cartCount" class="cart-count">0</span>
-            </div>
-            <div id="cartItems" class="cart-items"></div>
-            <div class="cart-footer">
-              <div class="cart-subtotal">Subtotal: <span id="cartSubtotal">₹0</span></div>
-              <div class="delivery-charge" id="deliveryChargeRow" style="display: none;">Delivery: <span id="deliveryChargeAmount">₹0</span></div>
-              <div class="cart-total">Total: <span id="cartTotal">₹0</span></div>
-              <button id="proceedToOrderBtn" class="proceed-btn">Proceed to Order</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
-
-    <!-- Order Modal -->
-    <div id="orderModal" class="modal">
-      <div class="modal-content">
-        <span class="close-modal">&times;</span>
-        <h3>📋 Delivery Details</h3>
-        <div class="modal-body">
-          <div class="input-group">
-            <label for="modalName">Full name</label>
-            <input type="text" id="modalName" placeholder="e.g. Rajesh Kumar">
-          </div>
-          <div class="input-group">
-            <label for="modalMobile">Mobile number (WhatsApp)</label>
-            <input type="tel" id="modalMobile" placeholder="e.g. 9876543210">
-          </div>
-          <div class="input-group">
-            <label for="modalAddress">Delivery address</label>
-            <textarea id="modalAddress" rows="3" placeholder="House / Flat No., Street, Landmark, City, Pincode"></textarea>
-          </div>
-          <button id="confirmOrderBtn" class="confirm-order-btn">📲 Confirm Order on WhatsApp</button>
-        </div>
-      </div>
+<!-- Sticky Navigation Bar -->
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <div class="nav-logo">
+      <span class="logo-icon">🌿</span>
+      <span class="logo-text">GREEN<span class="logo-highlight">MART</span></span>
+      <span class="logo-location">Kakinada</span>
     </div>
-
-    <!-- Success Popup -->
-    <div id="orderSuccessPopup" class="popup-overlay">
-      <div class="popup-card">
-        <div class="tick-icon">✅</div>
-        <h3>Order Placed Successfully!</h3>
-        <p>Your order has been sent via WhatsApp.<br>We will contact you shortly.</p>
-        <p class="cod-confirm">💵 Cash on Delivery only</p>
-        <button id="feedbackBtn" class="feedback-popup-btn">📝 Give Feedback</button>
-        <button id="closePopupBtn" class="close-popup">OK</button>
-      </div>
+    <div class="nav-search">
+      <i class="fas fa-search"></i>
+      <input type="text" id="globalSearch" placeholder="Search fresh vegetables...">
     </div>
-
-    <footer class="footer-note">
-      <div class="container">
-        <p>🌾 Same-day delivery (within 20 km of Kakinada) • Pay on delivery available • Trusted local mart</p>
-        <button id="feedbackFooterBtn" class="feedback-footer-btn">📝 Share Your Experience</button>
-      </div>
-    </footer>
+    <div class="nav-actions">
+      <button class="nav-icon wishlist-btn" id="wishlistBtn"><i class="far fa-heart"></i><span>Wishlist</span></button>
+      <button class="nav-icon cart-btn" id="cartBtn"><i class="fas fa-shopping-cart"></i><span>Cart</span><span class="cart-count" id="cartCountDesktop">0</span></button>
+      <button class="nav-icon user-btn" id="userBtn"><i class="far fa-user-circle"></i><span>Account</span></button>
+    </div>
+    <div class="hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
   </div>
-  <script src="script.js"></script>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#home">Home</a>
+    <a href="#categories">Categories</a>
+    <a href="#products">Products</a>
+    <a href="#offers">Offers</a>
+    <a href="#contact">Contact</a>
+    <button class="mobile-wishlist"><i class="far fa-heart"></i> Wishlist</button>
+    <button class="mobile-cart"><i class="fas fa-shopping-cart"></i> Cart</button>
+    <button class="mobile-user"><i class="far fa-user-circle"></i> Account</button>
+  </div>
+</nav>
+
+<main>
+  <!-- Hero Section -->
+  <section class="hero" id="home">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1>Farm Fresh Vegetables <br>Delivered To Your Doorstep</h1>
+        <p>Fresh from local farms. Fast delivery. Best prices.</p>
+        <div class="hero-buttons">
+          <button class="btn-primary" id="shopNowBtn">Shop Now <i class="fas fa-arrow-right"></i></button>
+          <button class="btn-secondary" id="exploreCategoriesBtn">Explore Categories</button>
+        </div>
+        <div class="hero-stats">
+          <div class="stat"><span class="stat-number">5000+</span><span class="stat-label">Orders Delivered</span></div>
+          <div class="stat"><span class="stat-number">100+</span><span class="stat-label">Products</span></div>
+          <div class="stat"><span class="stat-number">Same Day</span><span class="stat-label">Delivery</span></div>
+        </div>
+      </div>
+      <div class="hero-image">
+        <img src="https://images.unsplash.com/photo-1610348725531-843dff563e2c?w=600&auto=format" alt="Fresh Vegetables">
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories Section -->
+  <section class="categories" id="categories">
+    <div class="section-header">
+      <h2>Shop by <span>Category</span></h2>
+      <p>Explore our fresh vegetable selection</p>
+    </div>
+    <div class="categories-grid" id="categoriesGrid"></div>
+  </section>
+
+  <!-- Featured Products Section -->
+  <section class="featured-products" id="products">
+    <div class="section-header">
+      <h2>Today's <span>Fresh Picks</span></h2>
+      <p>Handpicked for you from local farms</p>
+    </div>
+    <div class="product-grid" id="productGrid"></div>
+  </section>
+
+  <!-- Promotional Banner -->
+  <section class="promo-banner" id="offers">
+    <div class="promo-content">
+      <div class="promo-text">
+        <span class="promo-tag">Limited Time Offer</span>
+        <h3>Flat 20% Off on First Order</h3>
+        <p>Use code: <strong>FRESH20</strong> at checkout</p>
+        <button class="btn-promo" id="copyCodeBtn">Copy Code</button>
+      </div>
+      <div class="promo-badge">
+        <span>🎯</span>
+        <div>Free Delivery<br>Above ₹499</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Choose Us -->
+  <section class="features">
+    <div class="section-header">
+      <h2>Why <span>Choose Us</span></h2>
+      <p>We make fresh vegetable shopping effortless</p>
+    </div>
+    <div class="features-grid" id="featuresGrid"></div>
+  </section>
+
+  <!-- Testimonials Carousel -->
+  <section class="testimonials">
+    <div class="section-header">
+      <h2>What Our <span>Customers Say</span></h2>
+      <p>Trusted by thousands of happy families</p>
+    </div>
+    <div class="testimonial-slider">
+      <button class="slider-prev"><i class="fas fa-chevron-left"></i></button>
+      <div class="testimonial-track" id="testimonialTrack"></div>
+      <button class="slider-next"><i class="fas fa-chevron-right"></i></button>
+    </div>
+    <div class="slider-dots" id="sliderDots"></div>
+  </section>
+
+  <!-- Delivery Information -->
+  <section class="delivery-info" id="delivery">
+    <div class="delivery-grid">
+      <div class="delivery-text">
+        <h3>Delivery Information</h3>
+        <p>We deliver fresh vegetables to your doorstep within <strong>20 km of Kakinada city center</strong>.</p>
+        <ul>
+          <li><i class="fas fa-clock"></i> Delivery Time: 60-90 mins</li>
+          <li><i class="fas fa-truck"></i> Same Day Delivery Available</li>
+          <li><i class="fas fa-rupee-sign"></i> Free Delivery Above ₹499</li>
+          <li><i class="fas fa-phone-alt"></i> Contact: +91 90007 93333</li>
+        </ul>
+        <div class="delivery-partners">Delivery Partners: <span>Zomato Logistics</span> <span>Shadowfax</span></div>
+      </div>
+      <div class="delivery-map">
+        <div class="map-placeholder">
+          <i class="fas fa-map-marker-alt"></i> Delivery Zone: 20km radius from Kakinada
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter Section -->
+  <section class="newsletter">
+    <div class="newsletter-content">
+      <h3>Subscribe to our Newsletter</h3>
+      <p>Get fresh updates on offers, new arrivals, and discounts</p>
+      <div class="newsletter-form">
+        <input type="email" placeholder="Enter your email" id="newsletterEmail">
+        <button id="newsletterSubscribe">Subscribe</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="#home">Home</a></li>
+        <li><a href="#categories">Shop</a></li>
+        <li><a href="#products">Products</a></li>
+        <li><a href="#offers">Offers</a></li>
+        <li><a href="#delivery">Delivery</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Customer Service</h4>
+      <ul>
+        <li><a href="#">FAQs</a></li>
+        <li><a href="#">Returns Policy</a></li>
+        <li><a href="#">Shipping Policy</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact Us</h4>
+      <ul>
+        <li><i class="fas fa-phone"></i> +91 90007 93333</li>
+        <li><i class="fas fa-envelope"></i> support@greenmart.com</li>
+        <li><i class="fas fa-map-marker-alt"></i> Kakinada, Andhra Pradesh</li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Follow Us</h4>
+      <div class="social-links">
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-facebook"></i></a>
+        <a href="#"><i class="fab fa-whatsapp"></i></a>
+        <a href="#"><i class="fab fa-youtube"></i></a>
+      </div>
+      <h4 style="margin-top: 20px;">Payment Methods</h4>
+      <div class="payment-icons">
+        <i class="fab fa-cc-visa"></i>
+        <i class="fab fa-cc-mastercard"></i>
+        <i class="fab fa-google-pay"></i>
+        <i class="fas fa-mobile-alt"></i>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2026 Green Mart Kakinada. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- Cart Drawer (with Clear Cart button + Location button) -->
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-drawer-header">
+    <h3>Your Cart <span id="cartDrawerCount">0</span></h3>
+    <div>
+      <button class="clear-cart-btn" id="clearCartBtn">🗑️ Clear</button>
+      <button class="close-drawer" id="closeDrawer">&times;</button>
+    </div>
+  </div>
+  <div class="cart-drawer-items" id="cartDrawerItems"></div>
+  <div class="cart-drawer-coupon">
+    <input type="text" placeholder="Coupon code" id="couponCode">
+    <button id="applyCoupon">Apply</button>
+  </div>
+  <!-- Customer Details Fields -->
+  <div class="cart-drawer-details">
+    <div class="input-field">
+      <label>Full Name</label>
+      <input type="text" id="checkoutName" placeholder="Enter your full name">
+    </div>
+    <div class="input-field">
+      <label>Mobile Number</label>
+      <input type="tel" id="checkoutMobile" placeholder="10-digit mobile number">
+    </div>
+    <div class="input-field">
+      <label>Delivery Address</label>
+      <textarea id="checkoutAddress" rows="2" placeholder="House No., Street, Landmark, City, Pincode"></textarea>
+      <button type="button" id="getLocationBtn" class="location-btn">📍 Get Current Location</button>
+    </div>
+  </div>
+  <div class="cart-drawer-summary">
+    <div class="summary-row">Subtotal: <span id="drawerSubtotal">₹0</span></div>
+    <div class="summary-row">Delivery: <span id="drawerDelivery">₹0</span></div>
+    <div class="summary-row discount-row" id="discountRow" style="display:none;">Discount: <span id="drawerDiscount">₹0</span></div>
+    <div class="summary-row total">Total: <span id="drawerTotal">₹0</span></div>
+    <button class="checkout-btn" id="checkoutBtn">Place Order (COD)</button>
+    <button class="continue-shopping" id="continueShopping">Continue Shopping</button>
+  </div>
+</div>
+<div class="drawer-overlay" id="drawerOverlay"></div>
+
+<!-- Quick View Modal -->
+<div class="quickview-modal" id="quickviewModal">
+  <div class="quickview-content">
+    <button class="close-quickview">&times;</button>
+    <div class="quickview-body" id="quickviewBody"></div>
+  </div>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
