@@ -1,6 +1,5 @@
 /**
- * GREEN MART KAKINADA - FULLY FIXED
- * Features: cart persistence, wishlist, add to cart, quick view, clear cart, order via WhatsApp, location autofill, map link in order
+ * GREEN MART KAKINADA - MOBILE-OPTIMIZED CART UPDATES
  */
 
 let products = [];
@@ -226,10 +225,13 @@ function updateWishlistUI() {
 }
 
 function updateCartUI() {
-  updateCartDrawer();
-  updateCartCount();
-  const drawerCount = document.getElementById('cartDrawerCount');
-  if (drawerCount) drawerCount.innerText = cart.reduce((sum, i) => sum + i.quantity, 0);
+  // Force DOM update on next frame (helps mobile)
+  requestAnimationFrame(() => {
+    updateCartDrawer();
+    updateCartCount();
+    const drawerCount = document.getElementById('cartDrawerCount');
+    if (drawerCount) drawerCount.innerText = cart.reduce((sum, i) => sum + i.quantity, 0);
+  });
 }
 
 function updateCartCount() {
@@ -265,6 +267,7 @@ function updateCartDrawer() {
     `;
   }).join('');
   
+  // Re-attach event listeners
   document.querySelectorAll('.dec-qty').forEach(btn => {
     btn.removeEventListener('click', handleQuantity);
     btn.addEventListener('click', handleQuantity);
@@ -348,7 +351,7 @@ function updateDrawerTotals() {
 // EVENT HANDLERS (Delegation for dynamic elements)
 // ============================================
 function setupGlobalEventDelegation() {
-  // Add to Cart
+  // Add to Cart (works on touch devices)
   document.addEventListener('click', (e) => {
     const addBtn = e.target.closest('.add-to-cart-btn');
     if (addBtn && !addBtn.disabled) {
@@ -379,6 +382,7 @@ function setupGlobalEventDelegation() {
       updateCartUI();
       showToast(`${product.name} (${quantity} ${product.unit}) added to cart!`);
       if (qtyInput) qtyInput.value = 1;
+      console.log('Cart updated:', cart);
     }
   });
   
@@ -470,7 +474,7 @@ function showQuickViewModal(product) {
 }
 
 // ============================================
-// CHECKOUT (reads fields from cart drawer, adds Google Maps link)
+// CHECKOUT (with Google Maps link)
 // ============================================
 function initCheckout() {
   const checkoutBtn = document.getElementById('checkoutBtn');
@@ -488,7 +492,6 @@ function initCheckout() {
       if (!mobile || !/^[0-9]{10}$/.test(mobile)) { alert('Please enter a valid 10-digit mobile number'); return; }
       if (!address) { alert('Please enter your delivery address'); return; }
 
-      // Create a Google Maps link from the address
       const mapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
       const addressWithMap = `${address}\n🗺️ View on map: ${mapsLink}`;
 
