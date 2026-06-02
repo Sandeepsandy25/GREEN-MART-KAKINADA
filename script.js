@@ -417,7 +417,7 @@ function setupGlobalEventDelegation() {
     }
   });
   
-  // Clear Cart button
+  // Clear Cart button (static)
   const clearBtn = document.getElementById('clearCartBtn');
   if (clearBtn) {
     clearBtn.removeEventListener('click', clearCart);
@@ -640,15 +640,16 @@ function initNewsletter() {
   }
 }
 
-// ===== RELIABLE CART DRAWER (works on mobile) =====
+// ===== RELIABLE CART DRAWER (works on both desktop and mobile) =====
 function initCartDrawer() {
-  const cartBtn = document.getElementById('cartBtn');
+  const desktopCartBtn = document.getElementById('cartBtn');
+  const mobileCartBtn = document.querySelector('.mobile-cart');
   const drawer = document.getElementById('cartDrawer');
   const overlay = document.getElementById('drawerOverlay');
   const closeDrawerBtn = document.getElementById('closeDrawer');
   const continueShopping = document.getElementById('continueShopping');
 
-  if (!cartBtn || !drawer || !overlay) {
+  if (!drawer || !overlay) {
     console.warn('Cart drawer elements not found');
     return;
   }
@@ -658,19 +659,24 @@ function initCartDrawer() {
     drawer.classList.add('open');
     overlay.classList.add('active');
     document.body.style.overflow = 'hidden';
-    console.log('Cart drawer opened'); // debug
   };
 
   const closeDrawer = () => {
     drawer.classList.remove('open');
     overlay.classList.remove('active');
     document.body.style.overflow = '';
-    console.log('Cart drawer closed');
   };
 
-  // Remove existing listeners to avoid duplicates
-  cartBtn.removeEventListener('click', openDrawer);
-  cartBtn.addEventListener('click', openDrawer);
+  // Attach to desktop cart button if exists
+  if (desktopCartBtn) {
+    desktopCartBtn.removeEventListener('click', openDrawer);
+    desktopCartBtn.addEventListener('click', openDrawer);
+  }
+  // Attach to mobile cart button if exists
+  if (mobileCartBtn) {
+    mobileCartBtn.removeEventListener('click', openDrawer);
+    mobileCartBtn.addEventListener('click', openDrawer);
+  }
   if (closeDrawerBtn) closeDrawerBtn.addEventListener('click', closeDrawer);
   if (continueShopping) continueShopping.addEventListener('click', closeDrawer);
   overlay.addEventListener('click', closeDrawer);
