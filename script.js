@@ -1,5 +1,6 @@
 /**
- * GREEN MART KAKINADA - MOBILE-OPTIMIZED CART UPDATES
+ * GREEN MART KAKINADA - FULLY WORKING
+ * Fixed: cart drawer, mobile menu, account button
  */
 
 let products = [];
@@ -225,13 +226,10 @@ function updateWishlistUI() {
 }
 
 function updateCartUI() {
-  // Force DOM update on next frame (helps mobile)
-  requestAnimationFrame(() => {
-    updateCartDrawer();
-    updateCartCount();
-    const drawerCount = document.getElementById('cartDrawerCount');
-    if (drawerCount) drawerCount.innerText = cart.reduce((sum, i) => sum + i.quantity, 0);
-  });
+  updateCartDrawer();
+  updateCartCount();
+  const drawerCount = document.getElementById('cartDrawerCount');
+  if (drawerCount) drawerCount.innerText = cart.reduce((sum, i) => sum + i.quantity, 0);
 }
 
 function updateCartCount() {
@@ -267,7 +265,6 @@ function updateCartDrawer() {
     `;
   }).join('');
   
-  // Re-attach event listeners
   document.querySelectorAll('.dec-qty').forEach(btn => {
     btn.removeEventListener('click', handleQuantity);
     btn.addEventListener('click', handleQuantity);
@@ -351,7 +348,7 @@ function updateDrawerTotals() {
 // EVENT HANDLERS (Delegation for dynamic elements)
 // ============================================
 function setupGlobalEventDelegation() {
-  // Add to Cart (works on touch devices)
+  // Add to Cart
   document.addEventListener('click', (e) => {
     const addBtn = e.target.closest('.add-to-cart-btn');
     if (addBtn && !addBtn.disabled) {
@@ -382,7 +379,6 @@ function setupGlobalEventDelegation() {
       updateCartUI();
       showToast(`${product.name} (${quantity} ${product.unit}) added to cart!`);
       if (qtyInput) qtyInput.value = 1;
-      console.log('Cart updated:', cart);
     }
   });
   
@@ -421,7 +417,7 @@ function setupGlobalEventDelegation() {
     }
   });
   
-  // Clear Cart button
+  // Clear Cart button (static)
   const clearBtn = document.getElementById('clearCartBtn');
   if (clearBtn) {
     clearBtn.removeEventListener('click', clearCart);
@@ -601,20 +597,32 @@ function initCoupon() {
   }
 }
 
+// === FIXED ACCOUNT BUTTON (both desktop and mobile) ===
 function initAuth() {
-  const userBtn = document.getElementById('userBtn');
-  if (userBtn) {
-    userBtn.addEventListener('click', () => {
-      const isLoggedIn = localStorage.getItem('greenmart_user');
-      if (isLoggedIn) {
-        if (confirm('Logout?')) { localStorage.removeItem('greenmart_user'); location.reload(); }
-      } else {
-        const email = prompt('Enter your email to login/register:');
-        if (email && email.includes('@')) { localStorage.setItem('greenmart_user', email); alert('Logged in successfully!'); location.reload(); }
-        else if (email) alert('Please enter a valid email');
+  const desktopUserBtn = document.getElementById('userBtn');
+  const mobileUserBtn = document.querySelector('.mobile-user');
+
+  const handleAuth = () => {
+    const isLoggedIn = localStorage.getItem('greenmart_user');
+    if (isLoggedIn) {
+      if (confirm('Logout?')) {
+        localStorage.removeItem('greenmart_user');
+        location.reload();
       }
-    });
-  }
+    } else {
+      const email = prompt('Enter your email to login/register:');
+      if (email && email.includes('@')) {
+        localStorage.setItem('greenmart_user', email);
+        alert('Logged in successfully!');
+        location.reload();
+      } else if (email) {
+        alert('Please enter a valid email');
+      }
+    }
+  };
+
+  if (desktopUserBtn) desktopUserBtn.addEventListener('click', handleAuth);
+  if (mobileUserBtn) mobileUserBtn.addEventListener('click', handleAuth);
 }
 
 function initNewsletter() {
@@ -632,19 +640,67 @@ function initNewsletter() {
   }
 }
 
+// ===== FIXED CART DRAWER – Ensures button works on mobile =====
 function initCartDrawer() {
   const cartBtn = document.getElementById('cartBtn');
   const drawer = document.getElementById('cartDrawer');
   const overlay = document.getElementById('drawerOverlay');
   const closeDrawerBtn = document.getElementById('closeDrawer');
   const continueShopping = document.getElementById('continueShopping');
-  if (cartBtn) cartBtn.addEventListener('click', openCartDrawer);
-  if (closeDrawerBtn) closeDrawerBtn.addEventListener('click', closeCartDrawer);
-  if (continueShopping) continueShopping.addEventListener('click', closeCartDrawer);
-  if (overlay) overlay.addEventListener('click', closeCartDrawer);
+
+  if (!cartBtn || !drawer || !overlay) {
+    console.warn('Cart drawer elements not found');
+    return;
+  }
+
+  const openDrawer = (e) => {
+    if (e) e.preventDefault();
+    drawer.classList.add('open');
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeDrawer = () => {
+    drawer.classList.remove('open');
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+  };
+
+  cartBtn.addEventListener('click', openDrawer);
+  if (closeDrawerBtn) closeDrawerBtn.addEventListener('click', closeDrawer);
+  if (continueShopping) continueShopping.addEventListener('click', closeDrawer);
+  overlay.addEventListener('click', closeDrawer);
 }
-function openCartDrawer() { document.getElementById('cartDrawer')?.classList.add('open'); document.getElementById('drawerOverlay')?.classList.add('active'); }
-function closeCartDrawer() { document.getElementById('cartDrawer')?.classList.remove('open'); document.getElementById('drawerOverlay')?.classList.remove('active'); }
+
+// ===== FIXED MOBILE MENU – closes after clicking a link =====
+function initMobileMenu() {
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+  if (!hamburger || !mobileMenu) return;
+
+  const toggleMenu = () => {
+    mobileMenu.classList.toggle('active');
+  };
+
+  const closeMenu = () => {
+    mobileMenu.classList.remove('active');
+  };
+
+  hamburger.addEventListener('click', toggleMenu);
+
+  // Close menu when any link or button inside mobile menu is clicked
+  const menuLinks = mobileMenu.querySelectorAll('a, button');
+  menuLinks.forEach(link => {
+    link.addEventListener('click', closeMenu);
+  });
+
+  // Also close when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!mobileMenu.contains(e.target) && !hamburger.contains(e.target) && mobileMenu.classList.contains('active')) {
+      closeMenu();
+    }
+  });
+}
 
 function showToast(message) {
   let toast = document.querySelector('.toast');
@@ -680,10 +736,6 @@ function initTestimonialSlider() {
   update(); setInterval(() => { currentSlide = (currentSlide + 1) % slides.length; update(); }, 5000);
 }
 
-function initMobileMenu() {
-  const hamburger = document.getElementById('hamburger'); const mobileMenu = document.getElementById('mobileMenu');
-  if (hamburger && mobileMenu) hamburger.addEventListener('click', () => mobileMenu.classList.toggle('active'));
-}
 function initSmoothScroll() { document.querySelectorAll('a[href^="#"]').forEach(anchor => anchor.addEventListener('click', function(e) { e.preventDefault(); const target = document.querySelector(this.getAttribute('href')); if (target) target.scrollIntoView({ behavior: 'smooth' }); })); }
 function initCTAScroll() {
   const shopNow = document.getElementById('shopNowBtn'); const explore = document.getElementById('exploreCategoriesBtn');
