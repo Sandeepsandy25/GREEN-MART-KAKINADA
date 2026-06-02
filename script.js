@@ -1,10 +1,10 @@
 /**
- * GREEN MART KAKINADA - FULLY WORKING (MOBILE CART FIXED)
- * All features: cart, wishlist, add to cart, quick view, clear cart, order via WhatsApp, location autofill, map link in order
+ * GREEN MART KAKINADA - FINAL VERSION
+ * Cart resets on every page load. Order history per logged‑in user.
  */
 
 let products = [];
-let cart = [];
+let cart = [];            // starts empty each session
 let wishlist = [];
 let couponApplied = false;
 let couponDiscount = 0;
@@ -191,16 +191,15 @@ function renderProducts(productArray) {
 }
 
 // ============================================
-// CART & WISHLIST (Local Storage)
+// CART & WISHLIST (Local Storage – only wishlist persists, cart does NOT)
 // ============================================
-function loadCart() {
-  const saved = localStorage.getItem('greenmart_cart');
-  if (saved) cart = JSON.parse(saved);
-  updateCartUI();
-}
-
+// Cart is NOT saved – starts empty each page load
 function saveCart() {
-  localStorage.setItem('greenmart_cart', JSON.stringify(cart));
+  // intentionally do nothing – cart is session only
+}
+function loadCart() {
+  cart = [];  // always empty on page load
+  updateCartUI();
 }
 
 function loadWishlist() {
@@ -304,13 +303,11 @@ function updateQuantity(id, action) {
       item.quantity = Math.round(item.quantity * 10) / 10;
     }
   }
-  saveCart();
-  updateCartUI();
+  updateCartUI();  // no save because cart not persisted
 }
 
 function removeCartItem(id) {
   cart = cart.filter(i => i.id != id);
-  saveCart();
   updateCartUI();
 }
 
@@ -318,7 +315,6 @@ function clearCart() {
   cart = [];
   couponApplied = false;
   couponDiscount = 0;
-  saveCart();
   updateCartUI();
   showToast('Cart cleared');
 }
@@ -375,7 +371,6 @@ function setupGlobalEventDelegation() {
           emoji: product.emoji
         });
       }
-      saveCart();
       updateCartUI();
       showToast(`${product.name} (${quantity} ${product.unit}) added to cart!`);
       if (qtyInput) qtyInput.value = 1;
@@ -417,7 +412,7 @@ function setupGlobalEventDelegation() {
     }
   });
   
-  // Clear Cart button (static)
+  // Clear Cart button
   const clearBtn = document.getElementById('clearCartBtn');
   if (clearBtn) {
     clearBtn.removeEventListener('click', clearCart);
@@ -460,7 +455,6 @@ function showQuickViewModal(product) {
         const existing = cart.find(i => i.id == product.id);
         if (existing) existing.quantity += qty;
         else cart.push({ id: product.id, name: product.name, price: product.price, quantity: qty, unit: product.unit, emoji: product.emoji });
-        saveCart();
         updateCartUI();
         showToast(`${product.name} added to cart!`);
         modal.classList.remove('active');
@@ -470,7 +464,7 @@ function showQuickViewModal(product) {
 }
 
 // ============================================
-// CHECKOUT (with Google Maps link)
+// CHECKOUT (saves order history for logged‑in users)
 // ============================================
 function initCheckout() {
   const checkoutBtn = document.getElementById('checkoutBtn');
@@ -501,10 +495,25 @@ function initCheckout() {
 
       window.open(`https://wa.me/919000793333?text=${encodeURIComponent(message)}`, '_blank');
 
+      // Save order history for logged‑in user
+      const user = localStorage.getItem('greenmart_user');
+      if (user) {
+        const userOrdersKey = `greenmart_orders_${user}`;
+        let orders = JSON.parse(localStorage.getItem(userOrdersKey) || '[]');
+        orders.unshift({
+          id: Date.now(),
+          date: new Date().toISOString(),
+          items: [...cart],
+          total: total,
+          status: 'Pending'
+        });
+        localStorage.setItem(userOrdersKey, JSON.stringify(orders));
+        showToast('Order saved to your history!');
+      }
+
       cart = [];
       couponApplied = false;
       couponDiscount = 0;
-      saveCart();
       updateCartUI();
       closeCartDrawer();
       showToast('Order placed! Check your WhatsApp');
@@ -514,6 +523,29 @@ function initCheckout() {
       document.getElementById('checkoutAddress').value = '';
     });
   }
+}
+
+// ============================================
+// VIEW ORDER HISTORY (for logged‑in users)
+// ============================================
+function showOrderHistory() {
+  const user = localStorage.getItem('greenmart_user');
+  if (!user) {
+    alert('Please login first to view your orders.');
+    return;
+  }
+  const userOrdersKey = `greenmart_orders_${user}`;
+  const orders = JSON.parse(localStorage.getItem(userOrdersKey) || '[]');
+  if (orders.length === 0) {
+    alert('No past orders found.');
+    return;
+  }
+  let orderList = '📦 Your Past Orders:\n\n';
+  orders.forEach((order, idx) => {
+    const date = new Date(order.date).toLocaleString();
+    orderList += `${idx+1}. ${date}\n   Total: ₹${order.total}\n   Items: ${order.items.length}\n   Status: ${order.status}\n\n`;
+  });
+  alert(orderList);
 }
 
 // ============================================
@@ -597,7 +629,7 @@ function initCoupon() {
   }
 }
 
-// === FIXED ACCOUNT BUTTON (both desktop and mobile) ===
+// === ACCOUNT BUTTON with order history ===
 function initAuth() {
   const desktopUserBtn = document.getElementById('userBtn');
   const mobileUserBtn = document.querySelector('.mobile-user');
@@ -605,9 +637,13 @@ function initAuth() {
   const handleAuth = () => {
     const isLoggedIn = localStorage.getItem('greenmart_user');
     if (isLoggedIn) {
-      if (confirm('Logout?')) {
+      // Show options: Logout or View Orders
+      const choice = confirm('Logout?\n\nPress OK to Logout, Cancel to view Orders');
+      if (choice) {
         localStorage.removeItem('greenmart_user');
         location.reload();
+      } else {
+        showOrderHistory();
       }
     } else {
       const email = prompt('Enter your email to login/register:');
@@ -667,12 +703,10 @@ function initCartDrawer() {
     document.body.style.overflow = '';
   };
 
-  // Attach to desktop cart button if exists
   if (desktopCartBtn) {
     desktopCartBtn.removeEventListener('click', openDrawer);
     desktopCartBtn.addEventListener('click', openDrawer);
   }
-  // Attach to mobile cart button if exists
   if (mobileCartBtn) {
     mobileCartBtn.removeEventListener('click', openDrawer);
     mobileCartBtn.addEventListener('click', openDrawer);
@@ -760,7 +794,7 @@ function initCopyCode() {
 // ============================================
 document.addEventListener('DOMContentLoaded', async () => {
   await loadProducts();
-  loadCart();
+  loadCart();          // cart starts empty
   loadWishlist();
   setupGlobalEventDelegation();
   initSearch();
