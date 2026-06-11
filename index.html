@@ -38,6 +38,7 @@
   </nav>
 
   <main>
+    <!-- Hero section -->
     <section class="hero" id="home">
       <div class="hero-overlay"></div>
       <div class="hero-content">
@@ -58,16 +59,19 @@
       </div>
     </section>
 
+    <!-- Categories -->
     <section class="categories" id="categories">
       <div class="section-header"><h2>Shop by <span>Category</span></h2><p>Explore our fresh vegetable selection</p></div>
       <div class="categories-grid" id="categoriesGrid"></div>
     </section>
 
+    <!-- Products -->
     <section class="featured-products" id="products">
       <div class="section-header"><h2>Today's <span>Fresh Picks</span></h2><p>Handpicked for you from local farms</p></div>
       <div class="product-grid" id="productGrid"></div>
     </section>
 
+    <!-- Promo -->
     <section class="promo-banner" id="offers">
       <div class="promo-content">
         <div class="promo-text">
@@ -80,11 +84,13 @@
       </div>
     </section>
 
+    <!-- Why Choose Us -->
     <section class="features">
       <div class="section-header"><h2>Why <span>Choose Us</span></h2><p>We make fresh vegetable shopping effortless</p></div>
       <div class="features-grid" id="featuresGrid"></div>
     </section>
 
+    <!-- Testimonials -->
     <section class="testimonials">
       <div class="section-header"><h2>What Our <span>Customers Say</span></h2><p>Trusted by thousands</p></div>
       <div class="testimonial-slider">
@@ -95,6 +101,7 @@
       <div class="slider-dots" id="sliderDots"></div>
     </section>
 
+    <!-- Delivery Info -->
     <section class="delivery-info" id="delivery">
       <div class="delivery-grid">
         <div class="delivery-text">
@@ -106,6 +113,7 @@
       </div>
     </section>
 
+    <!-- Newsletter -->
     <section class="newsletter">
       <div class="newsletter-content"><h3>Subscribe to our Newsletter</h3><p>Get fresh updates on offers and discounts</p>
         <div class="newsletter-form"><input type="email" placeholder="Enter your email" id="newsletterEmail"><button id="newsletterSubscribe">Subscribe</button></div>
@@ -155,14 +163,18 @@
     </div>
   </div>
 
-  <!-- Login Modal -->
-  <div id="loginModal" class="modal" style="display:none;">
+  <!-- Account Modal (Customer Login & Admin) -->
+  <div id="accountModal" class="modal" style="display:none;">
     <div class="modal-content" style="max-width:350px;">
       <span class="close-modal">&times;</span>
-      <h3>Welcome Back</h3>
-      <p>Enter your email to login or create an account</p>
-      <input type="email" id="loginEmailInput" placeholder="your@email.com" style="width:100%; padding:10px; margin:15px 0; border-radius:40px; border:1px solid #ccc;">
-      <button id="loginSubmitBtn" class="btn-primary" style="width:100%;">Continue</button>
+      <h3>Account</h3>
+      <div id="customerLoginSection">
+        <p>Login as a customer</p>
+        <input type="email" id="customerEmailInput" placeholder="your@email.com" style="width:100%; padding:10px; margin:10px 0; border-radius:40px; border:1px solid #ccc;">
+        <button id="customerLoginBtn" class="btn-primary" style="width:100%; margin-bottom:15px;">Customer Login</button>
+        <hr>
+        <button id="adminLoginBtn" class="btn-secondary" style="width:100%; margin-top:10px;">🔐 Admin Login</button>
+      </div>
     </div>
   </div>
 
