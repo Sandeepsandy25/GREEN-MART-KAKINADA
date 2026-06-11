@@ -166,7 +166,7 @@
     </div>
   </div>
 
-  <!-- Account Modal (Customer + Admin Login) -->
+  <!-- Account Modal -->
   <div id="accountModal" class="modal">
     <div class="modal-content" style="max-width:350px;">
       <span class="close-modal">&times;</span>
@@ -181,58 +181,24 @@
     </div>
   </div>
 
-  <!-- Minimal JavaScript to make account modal and basic UI work (replace with your JS later) -->
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+  <!-- Firebase config -->
   <script>
-    (function() {
-      // Account modal functionality (fixes the "Account button not working")
-      const accountModal = document.getElementById('accountModal');
-      const userBtn = document.getElementById('userBtn');
-      const closeModal = document.querySelector('#accountModal .close-modal');
-      const adminLoginFooter = document.getElementById('adminLoginFooter');
-
-      function openModal() {
-        if (accountModal) accountModal.style.display = 'flex';
-      }
-      function closeModalFunc() {
-        if (accountModal) accountModal.style.display = 'none';
-      }
-      if (userBtn) userBtn.addEventListener('click', openModal);
-      if (adminLoginFooter) adminLoginFooter.addEventListener('click', function(e) { e.preventDefault(); openModal(); });
-      if (closeModal) closeModal.addEventListener('click', closeModalFunc);
-      window.addEventListener('click', function(e) { if (e.target === accountModal) closeModalFunc(); });
-
-      // Placeholder handlers for demo
-      const customerLoginBtn = document.getElementById('customerLoginBtn');
-      const adminLoginBtn = document.getElementById('adminLoginBtn');
-      if (customerLoginBtn) customerLoginBtn.addEventListener('click', function() { alert('Customer login demo – replace with your JS'); closeModalFunc(); });
-      if (adminLoginBtn) adminLoginBtn.addEventListener('click', function() { alert('Admin login demo – replace with your JS'); closeModalFunc(); });
-
-      // Cart drawer toggle demo (basic)
-      const cartBtn = document.getElementById('cartBtn');
-      const cartDrawer = document.getElementById('cartDrawer');
-      const drawerOverlay = document.getElementById('drawerOverlay');
-      const closeDrawer = document.getElementById('closeDrawer');
-      const continueShopping = document.getElementById('continueShopping');
-      function openDrawer() { if(cartDrawer) cartDrawer.classList.add('open'); if(drawerOverlay) drawerOverlay.classList.add('active'); }
-      function closeDrawerFunc() { if(cartDrawer) cartDrawer.classList.remove('open'); if(drawerOverlay) drawerOverlay.classList.remove('active'); }
-      if(cartBtn) cartBtn.addEventListener('click', openDrawer);
-      if(closeDrawer) closeDrawer.addEventListener('click', closeDrawerFunc);
-      if(continueShopping) continueShopping.addEventListener('click', closeDrawerFunc);
-      if(drawerOverlay) drawerOverlay.addEventListener('click', closeDrawerFunc);
-
-      // Mobile menu toggle
-      const hamburger = document.getElementById('hamburger');
-      const mobileMenu = document.getElementById('mobileMenu');
-      if(hamburger && mobileMenu) {
-        hamburger.addEventListener('click', function() { mobileMenu.classList.toggle('active'); });
-      }
-      // Demo: copy coupon
-      const copyBtn = document.getElementById('copyCodeBtn');
-      if(copyBtn) copyBtn.addEventListener('click', function() { navigator.clipboard.writeText('FRESH20'); alert('Coupon FRESH20 copied!'); });
-      // Newsletter demo
-      const newsletterSub = document.getElementById('newsletterSubscribe');
-      if(newsletterSub) newsletterSub.addEventListener('click', function() { alert('Thanks for subscribing!'); });
-    })();
+    const firebaseConfig = {
+      apiKey: "AIzaSyCgp_la2njOuFtaqP7UOysBeMDOOna22GM",
+      authDomain: "greenmartadmin.firebaseapp.com",
+      projectId: "greenmartadmin",
+      storageBucket: "greenmartadmin.firebasestorage.app",
+      messagingSenderId: "699712488498",
+      appId: "1:699712488498:web:e009dea2bdfe35282e282b"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
   </script>
+
+  <script src="script.js"></script>
 </body>
 </html>
