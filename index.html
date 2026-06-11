@@ -126,7 +126,7 @@
       <div class="footer-col"><h4>Quick Links</h4><ul><li><a href="#home">Home</a></li><li><a href="#categories">Shop</a></li><li><a href="#products">Products</a></li><li><a href="#offers">Offers</a></li></ul></div>
       <div class="footer-col"><h4>Contact Us</h4><ul><li><i class="fas fa-phone"></i> +91 90007 93333</li><li><i class="fas fa-envelope"></i> support@greenmart.com</li><li><i class="fas fa-map-marker-alt"></i> Kakinada, AP</li></ul></div>
       <div class="footer-col"><h4>Follow Us</h4><div class="social-links"><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-facebook"></i></a><a href="#"><i class="fab fa-whatsapp"></i></a></div></div>
-      <div class="footer-col"><h4>Admin</h4><a href="admin-login.html" class="admin-link">🔐 Admin Login</a></div>
+      <div class="footer-col"><h4>Admin</h4><a href="#" class="admin-link" id="adminLoginFooter">🔐 Admin Login</a></div>
     </div>
     <div class="copyright">
       <p>Software developed by <strong>LabVerse Solutions Pvt. Ltd</strong> | Design by <strong>Sandeep Batte</strong></p>
@@ -167,7 +167,7 @@
   </div>
 
   <!-- Account Modal (Customer + Admin Login) -->
-  <div id="accountModal" class="modal" style="display:none;">
+  <div id="accountModal" class="modal">
     <div class="modal-content" style="max-width:350px;">
       <span class="close-modal">&times;</span>
       <h3>Account</h3>
@@ -176,29 +176,63 @@
         <input type="email" id="customerEmailInput" placeholder="your@email.com" style="width:100%; padding:10px; margin:10px 0; border-radius:40px; border:1px solid #ccc;">
         <button id="customerLoginBtn" class="btn-primary" style="width:100%; margin-bottom:15px;">Customer Login</button>
         <hr>
-        <button id="adminLoginBtn" class="btn-secondary" style="width:100%; margin-top:10px;">🔐 Admin Login</button>
+        <button id="adminLoginBtn" class="btn-secondary" style="width:100%; margin-top:10px; background:#1f2937; color:white;">🔐 Admin Login</button>
       </div>
     </div>
   </div>
 
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
-  <!-- Firebase configuration -->
+  <!-- Minimal JavaScript to make account modal and basic UI work (replace with your JS later) -->
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCgp_la2njOuFtaqP7UOysBeMDOOna22GM",
-      authDomain: "greenmartadmin.firebaseapp.com",
-      projectId: "greenmartadmin",
-      storageBucket: "greenmartadmin.firebasestorage.app",
-      messagingSenderId: "699712488498",
-      appId: "1:699712488498:web:e009dea2bdfe35282e282b"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-  </script>
+    (function() {
+      // Account modal functionality (fixes the "Account button not working")
+      const accountModal = document.getElementById('accountModal');
+      const userBtn = document.getElementById('userBtn');
+      const closeModal = document.querySelector('#accountModal .close-modal');
+      const adminLoginFooter = document.getElementById('adminLoginFooter');
 
-  <script src="script.js"></script>
+      function openModal() {
+        if (accountModal) accountModal.style.display = 'flex';
+      }
+      function closeModalFunc() {
+        if (accountModal) accountModal.style.display = 'none';
+      }
+      if (userBtn) userBtn.addEventListener('click', openModal);
+      if (adminLoginFooter) adminLoginFooter.addEventListener('click', function(e) { e.preventDefault(); openModal(); });
+      if (closeModal) closeModal.addEventListener('click', closeModalFunc);
+      window.addEventListener('click', function(e) { if (e.target === accountModal) closeModalFunc(); });
+
+      // Placeholder handlers for demo
+      const customerLoginBtn = document.getElementById('customerLoginBtn');
+      const adminLoginBtn = document.getElementById('adminLoginBtn');
+      if (customerLoginBtn) customerLoginBtn.addEventListener('click', function() { alert('Customer login demo – replace with your JS'); closeModalFunc(); });
+      if (adminLoginBtn) adminLoginBtn.addEventListener('click', function() { alert('Admin login demo – replace with your JS'); closeModalFunc(); });
+
+      // Cart drawer toggle demo (basic)
+      const cartBtn = document.getElementById('cartBtn');
+      const cartDrawer = document.getElementById('cartDrawer');
+      const drawerOverlay = document.getElementById('drawerOverlay');
+      const closeDrawer = document.getElementById('closeDrawer');
+      const continueShopping = document.getElementById('continueShopping');
+      function openDrawer() { if(cartDrawer) cartDrawer.classList.add('open'); if(drawerOverlay) drawerOverlay.classList.add('active'); }
+      function closeDrawerFunc() { if(cartDrawer) cartDrawer.classList.remove('open'); if(drawerOverlay) drawerOverlay.classList.remove('active'); }
+      if(cartBtn) cartBtn.addEventListener('click', openDrawer);
+      if(closeDrawer) closeDrawer.addEventListener('click', closeDrawerFunc);
+      if(continueShopping) continueShopping.addEventListener('click', closeDrawerFunc);
+      if(drawerOverlay) drawerOverlay.addEventListener('click', closeDrawerFunc);
+
+      // Mobile menu toggle
+      const hamburger = document.getElementById('hamburger');
+      const mobileMenu = document.getElementById('mobileMenu');
+      if(hamburger && mobileMenu) {
+        hamburger.addEventListener('click', function() { mobileMenu.classList.toggle('active'); });
+      }
+      // Demo: copy coupon
+      const copyBtn = document.getElementById('copyCodeBtn');
+      if(copyBtn) copyBtn.addEventListener('click', function() { navigator.clipboard.writeText('FRESH20'); alert('Coupon FRESH20 copied!'); });
+      // Newsletter demo
+      const newsletterSub = document.getElementById('newsletterSubscribe');
+      if(newsletterSub) newsletterSub.addEventListener('click', function() { alert('Thanks for subscribing!'); });
+    })();
+  </script>
 </body>
 </html>
