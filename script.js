@@ -1,7 +1,7 @@
 /**
  * GREEN MART KAKINADA – MAIN WEBSITE (Firestore version)
- * All existing cart, wishlist, checkout, location functions remain the same.
- * Only the product loading is changed to fetch from Firestore.
+ * All existing cart, wishlist, checkout functions remain exactly the same.
+ * Only product loading is changed to fetch from Firestore.
  */
 
 let products = [];
@@ -42,7 +42,7 @@ async function loadProducts() {
     console.log(`✅ Loaded ${products.length} products from Firestore`);
   } catch (error) {
     console.error('Firestore error:', error);
-    products = []; // fallback empty
+    products = [];
   }
   renderCategories();
   renderProducts(products);
@@ -57,7 +57,21 @@ function getCategories() {
   return Object.entries(cats).map(([name, count]) => ({ name, count, icon: getCategoryIcon(name) }));
 }
 function getCategoryIcon(cat) {
-  const icons = { 'Leafy Vegetables': '🥬', 'Root Vegetables': '🥕', 'Flower Vegetables': '🥦', 'Fruit Vegetables': '🍆', 'Stem Vegetables': '🌿', 'Bulb Vegetables': '🧅', 'Seed / Pod Vegetables': '🫘', 'Exotic / International': '🌍' };
+  const icons = {
+    'Fresh Vegetables': '🥕',
+    'Fruits': '🍎',
+    'Leafy Greens': '🥬',
+    'Dairy Products': '🥛',
+    'Special Items': '✨',
+    'Leafy Vegetables': '🥬',
+    'Root Vegetables': '🥕',
+    'Flower Vegetables': '🥦',
+    'Fruit Vegetables': '🍆',
+    'Stem Vegetables': '🌿',
+    'Bulb Vegetables': '🧅',
+    'Seed / Pod Vegetables': '🫘',
+    'Exotic / International': '🌍'
+  };
   return icons[cat] || '🥗';
 }
 function renderCategories() {
@@ -97,21 +111,17 @@ function renderProducts(productArray) {
     </div>`).join('');
   attachProductEventListeners();
 }
-function attachProductEventListeners() {
-  // All event listeners are already attached globally via delegation, but we reattach if needed
-}
+function attachProductEventListeners() { /* event delegation already covers clicks */ }
 
-// ========== CART & WISHLIST (same as before – keep your existing functions) ==========
-// ... (paste your original cart, wishlist, checkout, location, search, etc. functions here)
-// They are exactly the same as in your current working script.js.
-// To avoid duplication, I will not rewrite them – use your existing code.
+// ========== CART & WISHLIST (keep your existing functions) ==========
+// ... (your existing cart, wishlist, checkout, location, search, coupon functions)
 
 // ========== INITIALIZATION ==========
 document.addEventListener('DOMContentLoaded', async () => {
   await loadProducts();
   loadCart();      // your existing loadCart function
   loadWishlist();  // your existing loadWishlist
-  setupGlobalEventDelegation(); // your existing function
+  setupGlobalEventDelegation(); // your existing event delegation
   initSearch(); initCoupon(); initAuth(); initNewsletter(); initCheckout(); initCartDrawer();
   initMobileMenu(); initSmoothScroll(); initCTAScroll(); initCopyCode(); initLocationButton();
   renderTestimonials();
