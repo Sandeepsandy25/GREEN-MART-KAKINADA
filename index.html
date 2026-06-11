@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Navbar (same as before) -->
+  <!-- Navbar (unchanged) -->
   <nav class="navbar">
     <div class="nav-container">
       <div class="nav-logo">
@@ -39,7 +39,7 @@
   </nav>
 
   <main>
-    <!-- Hero Section -->
+    <!-- Hero section (unchanged) -->
     <section class="hero" id="home">
       <div class="hero-overlay"></div>
       <div class="hero-content">
@@ -125,46 +125,28 @@
   <footer class="footer"><div class="footer-grid"><div class="footer-col"><h4>Quick Links</h4><ul><li><a href="#home">Home</a></li><li><a href="#categories">Shop</a></li><li><a href="#products">Products</a></li><li><a href="#offers">Offers</a></li></ul></div><div class="footer-col"><h4>Contact Us</h4><ul><li><i class="fas fa-phone"></i> +91 90007 93333</li><li><i class="fas fa-envelope"></i> support@greenmart.com</li><li><i class="fas fa-map-marker-alt"></i> Kakinada, AP</li></ul></div><div class="footer-col"><h4>Follow Us</h4><div class="social-links"><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-facebook"></i></a><a href="#"><i class="fab fa-whatsapp"></i></a></div></div></div><div class="footer-bottom"><p>&copy; 2026 Green Mart Kakinada</p></div></footer>
 
   <!-- Cart Drawer -->
-  <div class="cart-drawer" id="cartDrawer">
-    <div class="cart-drawer-header"><h3>Your Cart <span id="cartDrawerCount">0</span></h3><div><button class="clear-cart-btn" id="clearCartBtn">🗑️ Clear</button><button class="close-drawer" id="closeDrawer">&times;</button></div></div>
-    <div class="cart-drawer-items" id="cartDrawerItems"></div>
-    <div class="cart-drawer-coupon"><input type="text" placeholder="Coupon code" id="couponCode"><button id="applyCoupon">Apply</button></div>
-    <div class="cart-drawer-details">
-      <div class="input-field"><label>Full Name</label><input type="text" id="checkoutName" placeholder="Enter your full name"></div>
-      <div class="input-field"><label>Mobile Number</label><input type="tel" id="checkoutMobile" placeholder="10-digit mobile number"></div>
-      <div class="input-field"><label>Delivery Address</label><textarea id="checkoutAddress" rows="2" placeholder="House No., Street, Landmark, City, Pincode"></textarea><button type="button" id="getLocationBtn" class="location-btn">📍 Get Current Location</button></div>
-    </div>
-    <div class="cart-drawer-summary">
-      <div class="summary-row">Subtotal: <span id="drawerSubtotal">₹0</span></div>
-      <div class="summary-row">Delivery: <span id="drawerDelivery">₹0</span></div>
-      <div class="summary-row discount-row" id="discountRow" style="display:none;">Discount: <span id="drawerDiscount">₹0</span></div>
-      <div class="summary-row total">Total: <span id="drawerTotal">₹0</span></div>
-      <button class="checkout-btn" id="checkoutBtn">Place Order (COD)</button>
-      <button class="continue-shopping" id="continueShopping">Continue Shopping</button>
-    </div>
-  </div>
+  <div class="cart-drawer" id="cartDrawer">...</div> <!-- keep your existing cart drawer HTML -->
   <div class="drawer-overlay" id="drawerOverlay"></div>
-
-  <!-- Quick View Modal -->
-  <div class="quickview-modal" id="quickviewModal"><div class="quickview-content"><button class="close-quickview">&times;</button><div class="quickview-body" id="quickviewBody"></div></div></div>
+  <div class="quickview-modal" id="quickviewModal">...</div>
 
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+  <!-- Your Firebase configuration -->
   <script>
-    // TODO: REPLACE WITH YOUR FIREBASE CONFIG
-   // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyCgp_la2njOuFtaqP7UOysBeMDOOna22GM",
-  authDomain: "greenmartadmin.firebaseapp.com",
-  projectId: "greenmartadmin",
-  storageBucket: "greenmartadmin.firebasestorage.app",
-  messagingSenderId: "699712488498",
-  appId: "1:699712488498:web:e009dea2bdfe35282e282b",
-  measurementId: "G-EDH2NRJT4B"
-};
+    const firebaseConfig = {
+      apiKey: "AIzaSyCgp_la2njOuFtaqP7UOysBeMDOOna22GM",
+      authDomain: "greenmartadmin.firebaseapp.com",
+      projectId: "greenmartadmin",
+      storageBucket: "greenmartadmin.firebasestorage.app",
+      messagingSenderId: "699712488498",
+      appId: "1:699712488498:web:e009dea2bdfe35282e282b"
+    };
+    firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
   </script>
+
   <script src="script.js"></script>
 </body>
 </html>
