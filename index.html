@@ -118,6 +118,7 @@
       <div class="footer-col"><h4>Quick Links</h4><ul><li><a href="#home">Home</a></li><li><a href="#categories">Shop</a></li><li><a href="#products">Products</a></li><li><a href="#offers">Offers</a></li></ul></div>
       <div class="footer-col"><h4>Contact Us</h4><ul><li><i class="fas fa-phone"></i> +91 90007 93333</li><li><i class="fas fa-envelope"></i> support@greenmart.com</li><li><i class="fas fa-map-marker-alt"></i> Kakinada, AP</li></ul></div>
       <div class="footer-col"><h4>Follow Us</h4><div class="social-links"><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-facebook"></i></a><a href="#"><i class="fab fa-whatsapp"></i></a></div></div>
+      <div class="footer-col"><h4>Admin</h4><a href="admin-login.html" class="admin-link">🔐 Admin Login</a></div>
     </div>
     <div class="footer-bottom"><p>&copy; 2026 Green Mart Kakinada</p></div>
   </footer>
@@ -151,6 +152,17 @@
     <div class="quickview-content">
       <button class="close-quickview">&times;</button>
       <div class="quickview-body" id="quickviewBody"></div>
+    </div>
+  </div>
+
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal" style="display:none;">
+    <div class="modal-content" style="max-width:350px;">
+      <span class="close-modal">&times;</span>
+      <h3>Welcome Back</h3>
+      <p>Enter your email to login or create an account</p>
+      <input type="email" id="loginEmailInput" placeholder="your@email.com" style="width:100%; padding:10px; margin:15px 0; border-radius:40px; border:1px solid #ccc;">
+      <button id="loginSubmitBtn" class="btn-primary" style="width:100%;">Continue</button>
     </div>
   </div>
 
