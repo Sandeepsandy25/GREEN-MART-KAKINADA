@@ -1,6 +1,7 @@
 /**
  * GREEN MART KAKINADA – MAIN WEBSITE (Firestore version)
- * Fixed cart drawer for mobile, account modal, all features working.
+ * Fixed cart drawer on mobile, account modal with Customer/Admin login.
+ * Product grid shows 2 columns on mobile via CSS.
  */
 
 let products = [];
@@ -103,7 +104,6 @@ function renderProducts(productArray) {
         <button class="quickview-btn" data-id="${product.id}">Quick View</button>
       </div>
     </div>`).join('');
-  attachProductEventListeners();
 }
 function attachProductEventListeners() { /* event delegation handles everything */ }
 
@@ -437,7 +437,6 @@ function initCartDrawer() {
   const overlay = document.getElementById('drawerOverlay');
   const closeDrawerBtn = document.getElementById('closeDrawer');
   const continueShopping = document.getElementById('continueShopping');
-  // Also handle mobile cart button from the mobile menu
   const mobileCartBtn = document.querySelector('.mobile-cart');
 
   const openDrawer = (e) => {
@@ -531,7 +530,7 @@ function initAuth() {
   const customerLoginBtn = document.getElementById('customerLoginBtn');
   const adminLoginBtn = document.getElementById('adminLoginBtn');
 
-  // Update UI after login/logout
+  // Update UI after login/logout (no automatic logout here – only on modal)
   const updateUserUI = () => {
     const user = localStorage.getItem('greenmart_user');
     const displayName = user ? user.split('@')[0] : 'Account';
@@ -554,7 +553,8 @@ function initAuth() {
       localStorage.setItem('greenmart_user', email);
       closeModalFunc();
       updateUserUI();
-      location.reload();
+      // Stay on index.html – customer can now shop
+      location.reload(); // optional, to refresh the UI
     } else {
       alert('Please enter a valid email address');
     }
@@ -564,7 +564,6 @@ function initAuth() {
     window.location.href = 'admin-login.html';
   };
 
-  // Attach events
   if (desktopUserBtn) desktopUserBtn.addEventListener('click', showModal);
   if (mobileUserBtn) mobileUserBtn.addEventListener('click', showModal);
   if (closeModal) closeModal.addEventListener('click', closeModalFunc);
