@@ -2,6 +2,7 @@
  * GREEN MART KAKINADA – MAIN WEBSITE (Firestore version)
  * Features: product loading from Firestore, cart (localStorage), wishlist, checkout, location, search, coupons, newsletter, account modal.
  * Fully responsive, works on desktop and mobile.
+ * Updated delivery charges: <100=₹50, 100-200=₹30, 200-500=₹20, >=500=Free
  */
 
 let products = [];
@@ -9,8 +10,8 @@ let cart = [];
 let wishlist = [];
 let couponApplied = false;
 let couponDiscount = 0;
-const DELIVERY_FEE_THRESHOLD = 499;
-const DELIVERY_FEE = 40;
+
+// No old delivery constants – now using getDeliveryFee()
 
 // Features Data (static)
 const features = [
@@ -39,6 +40,15 @@ const sampleProducts = [
   { id: "5", name: "Spinach", telugu: "పాలకూర", category: "Leafy Greens", price: 25, originalPrice: 35, discount: 28, unit: "bunch", rating: 4.7, reviews: 52, emoji: "🥬", bestSeller: true, available: true },
   { id: "6", name: "Cucumber", telugu: "దోసకాయ", category: "Fresh Vegetables", price: 30, originalPrice: 40, discount: 25, unit: "kg", rating: 4.2, reviews: 73, emoji: "🥒", bestSeller: false, available: true }
 ];
+
+// ========== DELIVERY FEE BASED ON SUBTOTAL (NEW LOGIC) ==========
+function getDeliveryFee(subtotal) {
+  if (subtotal === 0) return 0;
+  if (subtotal < 100) return 50;          // Below ₹100 → ₹50
+  if (subtotal < 200) return 30;          // ₹100 to ₹199 → ₹30
+  if (subtotal < 500) return 20;          // ₹200 to ₹499 → ₹20
+  return 0;                               // ₹500+ → Free
+}
 
 // ========== LOAD PRODUCTS FROM FIRESTORE ==========
 async function loadProducts() {
@@ -237,16 +247,22 @@ function clearCart() {
 }
 function updateDrawerTotals() {
   const subtotal = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
-  const deliveryCharge = subtotal >= DELIVERY_FEE_THRESHOLD ? 0 : (subtotal > 0 ? DELIVERY_FEE : 0);
+  const deliveryCharge = getDeliveryFee(subtotal);
   const discountAmount = couponApplied ? subtotal * (couponDiscount / 100) : 0;
   const total = subtotal + deliveryCharge - discountAmount;
+  
   const subtotalSpan = document.getElementById('drawerSubtotal');
   const deliverySpan = document.getElementById('drawerDelivery');
   const discountSpan = document.getElementById('drawerDiscount');
   const totalSpan = document.getElementById('drawerTotal');
   const discountRow = document.getElementById('discountRow');
+  
   if (subtotalSpan) subtotalSpan.innerText = `₹${subtotal.toFixed(2)}`;
-  if (deliverySpan) deliverySpan.innerText = deliveryCharge === 0 ? (subtotal > 0 ? 'Free' : '₹0') : `₹${deliveryCharge}`;
+  if (deliverySpan) {
+    if (subtotal === 0) deliverySpan.innerText = '₹0';
+    else if (deliveryCharge === 0) deliverySpan.innerText = 'Free';
+    else deliverySpan.innerText = `₹${deliveryCharge}`;
+  }
   if (discountSpan && discountRow) {
     discountSpan.innerText = `-₹${discountAmount.toFixed(2)}`;
     discountRow.style.display = couponApplied ? 'flex' : 'none';
@@ -348,7 +364,7 @@ function showQuickViewModal(product) {
   }
 }
 
-// ========== CHECKOUT (WhatsApp) ==========
+// ========== CHECKOUT (WhatsApp) with new delivery logic ==========
 function initCheckout() {
   const checkoutBtn = document.getElementById('checkoutBtn');
   if (checkoutBtn) {
@@ -363,11 +379,12 @@ function initCheckout() {
       const mapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
       const addressWithMap = `${address}\n🗺️ View on map: ${mapsLink}`;
       const subtotal = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
-      const delivery = subtotal >= DELIVERY_FEE_THRESHOLD ? 0 : DELIVERY_FEE;
+      const delivery = getDeliveryFee(subtotal);
       const discountAmt = couponApplied ? subtotal * (couponDiscount / 100) : 0;
       const total = subtotal + delivery - discountAmt;
       const orderDetails = cart.map(i => `${i.name}: ${i.quantity} ${i.unit || 'kg'} @ ₹${i.price}`).join('\n');
-      const message = `🛒 *GREEN MART KAKINADA - New Order*\n\n${orderDetails}\n\n💰 Subtotal: ₹${subtotal}\n🚚 Delivery: ${delivery === 0 ? 'FREE' : '₹' + delivery}\n🎟️ Discount: -₹${discountAmt}\n💵 Total: ₹${total}\n\n👤 Name: ${name}\n📱 Mobile: ${mobile}\n🏠 Address: ${addressWithMap}\n\n✅ Only COD.`;
+      const deliveryText = delivery === 0 ? 'FREE' : `₹${delivery}`;
+      const message = `🛒 *GREEN MART KAKINADA - New Order*\n\n${orderDetails}\n\n💰 Subtotal: ₹${subtotal}\n🚚 Delivery: ${deliveryText}\n🎟️ Discount: -₹${discountAmt}\n💵 Total: ₹${total}\n\n👤 Name: ${name}\n📱 Mobile: ${mobile}\n🏠 Address: ${addressWithMap}\n\n✅ Only COD.`;
       window.open(`https://wa.me/919000793333?text=${encodeURIComponent(message)}`, '_blank');
       cart = []; couponApplied = false; couponDiscount = 0; saveCart(); updateCartUI(); closeCartDrawer();
       showToast('Order placed! Check your WhatsApp');
