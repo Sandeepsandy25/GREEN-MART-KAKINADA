@@ -1,7 +1,7 @@
 /**
  * GREEN MART KAKINADA – MAIN WEBSITE (Firestore version)
- * Fixed cart drawer on mobile, account modal with Customer/Admin login.
- * Product grid shows 2 columns on mobile via CSS.
+ * Features: product loading from Firestore, cart (localStorage), wishlist, checkout, location, search, coupons, newsletter, account modal.
+ * Fully responsive, works on desktop and mobile.
  */
 
 let products = [];
@@ -12,7 +12,7 @@ let couponDiscount = 0;
 const DELIVERY_FEE_THRESHOLD = 499;
 const DELIVERY_FEE = 40;
 
-// Features Data
+// Features Data (static)
 const features = [
   { icon: "🚜", title: "Fresh From Farms", desc: "Directly sourced from local farms" },
   { icon: "💰", title: "Affordable Pricing", desc: "Best prices in town" },
@@ -22,7 +22,7 @@ const features = [
   { icon: "💬", title: "Customer Support", desc: "24/7 dedicated support" }
 ];
 
-// Testimonials
+// Testimonials (static)
 const testimonials = [
   { id: 1, name: "Rajesh Kumar", rating: 5, text: "Excellent quality vegetables! The delivery is always on time. Highly recommend!", avatar: "👨" },
   { id: 2, name: "Priya Sharma", rating: 5, text: "Love the fresh produce. Their organic section is amazing. Will order again!", avatar: "👩" },
@@ -530,7 +530,6 @@ function initAuth() {
   const customerLoginBtn = document.getElementById('customerLoginBtn');
   const adminLoginBtn = document.getElementById('adminLoginBtn');
 
-  // Update UI after login/logout (no automatic logout here – only on modal)
   const updateUserUI = () => {
     const user = localStorage.getItem('greenmart_user');
     const displayName = user ? user.split('@')[0] : 'Account';
@@ -539,13 +538,8 @@ function initAuth() {
     if (mobileUserBtn) mobileUserBtn.innerHTML = btnHtml;
   };
 
-  const showModal = () => {
-    modal.style.display = 'flex';
-  };
-
-  const closeModalFunc = () => {
-    modal.style.display = 'none';
-  };
+  const showModal = () => { modal.style.display = 'flex'; };
+  const closeModalFunc = () => { modal.style.display = 'none'; };
 
   const handleCustomerLogin = () => {
     const email = customerEmailInput.value.trim();
@@ -553,8 +547,7 @@ function initAuth() {
       localStorage.setItem('greenmart_user', email);
       closeModalFunc();
       updateUserUI();
-      // Stay on index.html – customer can now shop
-      location.reload(); // optional, to refresh the UI
+      location.reload();
     } else {
       alert('Please enter a valid email address');
     }
