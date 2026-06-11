@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Green Mart Admin Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="logo"><span class="logo-icon">🌿</span><span class="logo-text">GREEN<span class="logo-highlight">MART</span></span></div>
+      <h2>Admin Login</h2>
+      <form id="loginForm">
+        <div class="input-group"><label>Email</label><input type="email" id="loginEmail" required></div>
+        <div class="input-group"><label>Password</label><input type="password" id="loginPassword" required></div>
+        <button type="submit" class="login-btn">Login</button>
+        <div id="loginError" class="error-message"></div>
+      </form>
+    </div>
+  </div>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script>
+    // TODO: REPLACE WITH YOUR FIREBASE CONFIG
+    const firebaseConfig = {
+  apiKey: "AIzaSyCgp_la2njOuFtaqP7UOysBeMDOOna22GM",
+  authDomain: "greenmartadmin.firebaseapp.com",
+  projectId: "greenmartadmin",
+  storageBucket: "greenmartadmin.firebasestorage.app",
+  messagingSenderId: "699712488498",
+  appId: "1:699712488498:web:e009dea2bdfe35282e282b",
+  measurementId: "G-EDH2NRJT4B"
+};
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      try {
+        const userCred = await auth.signInWithEmailAndPassword(email, password);
+        const userDoc = await db.collection('users').doc(userCred.user.email).get();
+        if (!userDoc.exists || !['super_admin','shop_admin'].includes(userDoc.data().role)) {
+          await auth.signOut();
+          document.getElementById('loginError').innerText = 'Unauthorized: No admin role.';
+          return;
+        }
+        window.location.href = 'dashboard.html';
+      } catch (err) {
+        document.getElementById('loginError').innerText = err.message;
+      }
+    });
+  </script>
+</body>
+</html>

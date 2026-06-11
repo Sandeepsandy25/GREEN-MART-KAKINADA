@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Green Mart Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="dashboard">
+    <aside class="sidebar">
+      <div class="logo"><span class="logo-icon">🌿</span><span class="logo-text">GREEN<span class="logo-highlight">MART</span></span></div>
+      <nav>
+        <button class="nav-btn active" data-section="products">📦 Products</button>
+        <button class="nav-btn" data-section="banners">🖼️ Banners</button>
+        <button class="nav-btn" data-section="offers">🎁 Offers</button>
+        <button class="nav-btn" data-section="stats">📊 Statistics</button>
+        <button class="nav-btn" data-section="logs">📜 Activity Log</button>
+      </nav>
+      <div class="user-info"><span id="userEmail"></span><button id="logoutBtn" class="logout-btn">Logout</button></div>
+    </aside>
+    <main class="main-content">
+      <div id="productsSection" class="section active">
+        <div class="section-header"><h2>Product Management</h2><button id="addProductBtn" class="btn-primary" style="display:none;">+ Add Product</button></div>
+        <div class="filters"><input type="text" id="searchProducts" placeholder="Search by name..."><select id="categoryFilter"><option value="">All Categories</option></select></div>
+        <div class="table-container"><table id="productsTable"><thead><tr><th>Name</th><th>Telugu</th><th>Price (₹)</th><th>Unit</th><th>Category</th><th>Available</th><th>Actions</th></tr></thead><tbody></tbody></tr></div>
+      </div>
+      <div id="bannersSection" class="section"><div class="section-header"><h2>Banner Management</h2><button id="addBannerBtn" class="btn-primary">+ Add Banner</button></div><div id="bannersList" class="banners-grid"></div></div>
+      <div id="offersSection" class="section"><div class="section-header"><h2>Offer Management</h2><button id="addOfferBtn" class="btn-primary">+ Add Offer</button></div><div id="offersList" class="offers-grid"></div></div>
+      <div id="statsSection" class="section"><h2>Dashboard Statistics</h2><div class="stats-cards" id="statsCards"></div><div class="chart-container"><h3>Last Updated Products</h3><div id="lastUpdatedList"></div></div></div>
+      <div id="logsSection" class="section"><h2>Activity Log</h2><div class="table-container"><table id="logsTable"><thead><tr><th>Admin</th><th>Action</th><th>Product</th><th>Old Price</th><th>New Price</th><th>Date & Time</th></tr></thead><tbody></tbody></table></div></div>
+    </main>
+  </div>
+
+  <!-- Modals -->
+  <div id="productModal" class="modal"><div class="modal-content"><span class="close">&times;</span><h3 id="modalTitle">Add / Edit Product</h3><form id="productForm"><input type="hidden" id="productId"><div class="form-row"><label>Name</label><input type="text" id="prodName" required></div><div class="form-row"><label>Telugu</label><input type="text" id="prodTelugu"></div><div class="form-row"><label>Price (₹)</label><input type="number" id="prodPrice" step="1" required></div><div class="form-row"><label>Unit</label><input type="text" id="prodUnit" required></div><div class="form-row"><label>Category</label><select id="prodCategory"><option>Leafy Vegetables</option><option>Root Vegetables</option><option>Flower Vegetables</option><option>Fruit Vegetables</option><option>Stem Vegetables</option><option>Bulb Vegetables</option><option>Seed / Pod Vegetables</option><option>Exotic / International</option></select></div><div class="form-row"><label>Emoji</label><input type="text" id="prodEmoji" placeholder="🥬"></div><div class="form-row"><label>Available</label><input type="checkbox" id="prodAvailable"></div><button type="submit" class="btn-primary">Save</button></form></div></div>
+  <div id="bannerModal" class="modal"><div class="modal-content"><span class="close">&times;</span><h3>Add / Edit Banner</h3><form id="bannerForm"><input type="hidden" id="bannerId"><div class="form-row"><label>Image URL</label><input type="url" id="bannerImage" required></div><div class="form-row"><label>Title</label><input type="text" id="bannerTitle"></div><div class="form-row"><label>Link</label><input type="url" id="bannerLink"></div><div class="form-row"><label>Active</label><input type="checkbox" id="bannerActive"></div><button type="submit" class="btn-primary">Save</button></form></div></div>
+  <div id="offerModal" class="modal"><div class="modal-content"><span class="close">&times;</span><h3>Add / Edit Offer</h3><form id="offerForm"><input type="hidden" id="offerId"><div class="form-row"><label>Title</label><input type="text" id="offerTitle" required></div><div class="form-row"><label>Description</label><textarea id="offerDesc"></textarea></div><div class="form-row"><label>Coupon Code</label><input type="text" id="offerCode" required></div><div class="form-row"><label>Discount %</label><input type="number" id="offerDiscount" step="1" required></div><div class="form-row"><label>Valid Until</label><input type="date" id="offerValidUntil"></div><div class="form-row"><label>Active</label><input type="checkbox" id="offerActive"></div><button type="submit" class="btn-primary">Save</button></form></div></div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

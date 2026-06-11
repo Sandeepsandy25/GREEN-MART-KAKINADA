@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Import Vegetables to Firestore</title>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+<h2>Importing vegetables...</h2>
+<pre id="log"></pre>
+<script>
+  // Firebase configuration (replace with yours if different)
+  const firebaseConfig = {
+    apiKey: "AIzaSyCgp_la2njOuFtaqP7UOysBeMDOOna22GM",
+    authDomain: "greenmartadmin.firebaseapp.com",
+    projectId: "greenmartadmin",
+    storageBucket: "greenmartadmin.firebasestorage.app",
+    messagingSenderId: "699712488498",
+    appId: "1:699712488498:web:e009dea2bdfe35282e282b",
+    measurementId: "G-EDH2NRJT4B"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  // Complete vegetables data (includes all items from your list)
+  const vegetablesData = {
+    "vegetables": [
+      { "id": "green_chilli", "name": "Green Chilli", "telugu": "మిర్చి", "price": 40, "emoji": "🌶️", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "white_chilli", "name": "White Chilli", "telugu": "మిర్చి వైట్", "price": 60, "emoji": "🫑", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "ginger", "name": "Ginger", "telugu": "అల్లం", "price": 100, "emoji": "🫚", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "taro_root", "name": "Taro Root (Colocasia)", "telugu": "చేమదుంప", "price": 50, "emoji": "🍠", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "sweet_potato", "name": "Sweet Potato", "telugu": "చిలకడదుంప", "price": 50, "emoji": "🍠", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "cabbage", "name": "Cabbage", "telugu": "క్యాబేజీ", "price": 30, "emoji": "🥬", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "ivy_gourd", "name": "Ivy Gourd", "telugu": "దొండకాయ", "price": 40, "emoji": "🥒", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "brinjal", "name": "Brinjal / Eggplant", "telugu": "వంకాయ", "price": 35, "emoji": "🍆", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "white_brinjal", "name": "White Brinjal", "telugu": "తెల్ల వంగ", "price": 40, "emoji": "🍆", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "water_brinjal", "name": "Water Brinjal", "telugu": "నీటివంకాయలు", "price": 45, "emoji": "🍆", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "okra", "name": "Okra / Lady's Finger", "telugu": "బెండకాయ", "price": 40, "emoji": "🌱", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "hyacinth_beans", "name": "Hyacinth Beans", "telugu": "బొబ్బరుచిక్కుడు", "price": 55, "emoji": "🫘", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "bitter_gourd", "name": "Bitter Gourd", "telugu": "కాకరకాయ", "price": 45, "emoji": "🥒", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "ridge_gourd", "name": "Ridge Gourd", "telugu": "బీరకాయ", "price": 35, "emoji": "🥒", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "ash_gourd", "name": "Ash Gourd", "telugu": "ఆనబకాయ", "price": 25, "emoji": "🥒", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "tomato", "name": "Tomato", "telugu": "టమాటో", "price": 40, "emoji": "🍅", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "raw_banana", "name": "Raw Banana", "telugu": "అరటికాయ", "price": 30, "emoji": "🍌", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "raw_mango", "name": "Raw Mango", "telugu": "మామిడికాయ", "price": 50, "emoji": "🥭", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "carrot", "name": "Carrot", "telugu": "కేరట్", "price": 45, "emoji": "🥕", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "beetroot", "name": "Beetroot", "telugu": "బీట్రూట్", "price": 45, "emoji": "🟣", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "capsicum", "name": "Capsicum / Bell Pepper", "telugu": "కాప్సికం", "price": 70, "emoji": "🫑", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "drumstick", "name": "Drumstick", "telugu": "మునగకాయ", "price": 60, "emoji": "🌿", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "yellow_cucumber", "name": "Yellow Cucumber", "telugu": "దోసకాయ", "price": 30, "emoji": "🥒", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "broad_beans", "name": "Broad Beans", "telugu": "చిక్కుడుకాయలు", "price": 60, "emoji": "🫘", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "spine_gourd", "name": "Spine Gourd", "telugu": "ఆకాకర కాయలు", "price": 50, "emoji": "🥒", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "cucumber", "name": "Cucumber", "telugu": "కీరాదోస", "price": 30, "emoji": "🥒", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "english_cucumber", "name": "English Cucumber", "telugu": "ఇంగ్లిష్ కీరా", "price": 50, "emoji": "🥒", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "french_beans", "name": "French Beans", "telugu": "బీన్స్ కాయలు", "price": 55, "emoji": "🫘", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "stringless_beans", "name": "Stringless Beans", "telugu": "స్టింగ్లెస్ బీన్స్", "price": 60, "emoji": "🫘", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "spring_onion", "name": "Spring Onion", "telugu": "ఉల్లికాడలు", "price": 25, "emoji": "🧅", "unit": "bunch", "category": "Fresh Vegetables", "available": true },
+      { "id": "pointed_gourd", "name": "Pointed Gourd", "telugu": "పొటల్స్", "price": 40, "emoji": "🥒", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "onion", "name": "Onion", "telugu": "ఉల్లిపాయ", "price": 30, "emoji": "🧅", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "shallots", "name": "Shallots (Small Onion)", "telugu": "బిర్యానీ పాయలు", "price": 60, "emoji": "🧅", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "sirpur_onion", "name": "Sirpur Onion", "telugu": "సిర్పూర్ ఉల్లిపాయలు", "price": 50, "emoji": "🧅", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "white_onion", "name": "White Onion", "telugu": "తెల్ల ఉల్లిపాయలు", "price": 40, "emoji": "🧅", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "big_garlic", "name": "Big Garlic", "telugu": "వెల్లుల్లి Big", "price": 180, "emoji": "🧄", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "small_garlic", "name": "Small Garlic", "telugu": "వెల్లుల్లి Small", "price": 160, "emoji": "🧄", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "snake_gourd", "name": "Snake Gourd", "telugu": "పొట్లకాయ", "price": 35, "emoji": "🥒", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "pumpkin", "name": "Pumpkin", "telugu": "గుమ్మడికాయ", "price": 30, "emoji": "🎃", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "winter_melon", "name": "Winter Melon", "telugu": "బూడిదగుమ్మడికాయ", "price": 30, "emoji": "🥒", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "cluster_beans", "name": "Cluster Beans", "telugu": "గోరుచిక్కుడు", "price": 50, "emoji": "🫘", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "mango_ginger", "name": "Mango Ginger", "telugu": "మామిడి అల్లం", "price": 80, "emoji": "🫚", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "hog_plum", "name": "Hog Plum", "telugu": "వాకాయలు", "price": 70, "emoji": "🍑", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "raw_jackfruit", "name": "Raw Jackfruit", "telugu": "పనసపోట్టు", "price": 40, "emoji": "🌰", "unit": "piece", "category": "Fresh Vegetables", "available": true },
+      { "id": "green_peas", "name": "Green Peas", "telugu": "బఠాణి", "price": 60, "emoji": "🟢", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "cauliflower", "name": "Cauliflower", "telugu": "కాలిఫ్లవర్", "price": 40, "emoji": "🥦", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "elephant_foot_yam", "name": "Elephant Foot Yam", "telugu": "కంద దుంప", "price": 55, "emoji": "🍠", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "tapioca", "name": "Tapioca / Cassava", "telugu": "పెండలం", "price": 45, "emoji": "🥔", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "bottle_gourd", "name": "Bottle Gourd", "telugu": "సొరకాయ", "price": 30, "emoji": "🥒", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "baby_corn", "name": "Baby Corn", "telugu": "బేబీకార్న్", "price": 80, "emoji": "🌽", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+      { "id": "radish", "name": "Radish", "telugu": "ముల్లంగి", "price": 35, "emoji": "🥕", "unit": "kg", "category": "Fresh Vegetables", "available": true },
+
+      { "id": "lemon", "name": "Lemon", "telugu": "నిమ్మకాయ", "price": 80, "emoji": "🍋", "unit": "kg", "category": "Fruits", "available": true },
+      { "id": "lime", "name": "Lime / Green Lemon", "telugu": "నిమ్మకాయ గ్రీన్", "price": 70, "emoji": "🍋", "unit": "kg", "category": "Fruits", "available": true },
+      { "id": "indian_gooseberry", "name": "Indian Gooseberry (Amla)", "telugu": "ఉసిరికాయలు", "price": 90, "emoji": "🟢", "unit": "kg", "category": "Fruits", "available": true },
+      { "id": "tamarind", "name": "Tamarind", "telugu": "చింతకాయలు", "price": 100, "emoji": "🟤", "unit": "kg", "category": "Fruits", "available": true },
+      { "id": "banana", "name": "Banana", "telugu": "అరటిపళ్ళు", "price": 50, "emoji": "🍌", "unit": "dozen", "category": "Fruits", "available": true },
+      { "id": "coconut", "name": "Coconut", "telugu": "కొబ్బరికాయ", "price": 45, "emoji": "🥥", "unit": "piece", "category": "Fruits", "available": true },
+
+      { "id": "amaranth_leaves", "name": "Amaranth Leaves", "telugu": "తోటకూర", "price": 25, "emoji": "🥬", "unit": "bunch", "category": "Leafy Greens", "available": true },
+      { "id": "spinach", "name": "Spinach", "telugu": "పాలకూర", "price": 25, "emoji": "🥬", "unit": "bunch", "category": "Leafy Greens", "available": true },
+      { "id": "sorrel_leaves", "name": "Sorrel Leaves", "telugu": "చుక్కకూర", "price": 20, "emoji": "🥬", "unit": "bunch", "category": "Leafy Greens", "available": true },
+      { "id": "fenugreek_leaves", "name": "Fenugreek Leaves", "telugu": "మెంతికూర", "price": 20, "emoji": "🌿", "unit": "bunch", "category": "Leafy Greens", "available": true },
+      { "id": "roselle_leaves", "name": "Roselle Leaves (Gongura)", "telugu": "గోంగూర", "price": 30, "emoji": "🥬", "unit": "bunch", "category": "Leafy Greens", "available": true },
+      { "id": "malabar_spinach", "name": "Malabar Spinach", "telugu": "బచ్చలికూర", "price": 25, "emoji": "🌿", "unit": "bunch", "category": "Leafy Greens", "available": true },
+      { "id": "water_amaranth", "name": "Water Amaranth", "telugu": "పొన్నగంటి కూర", "price": 20, "emoji": "🥬", "unit": "bunch", "category": "Leafy Greens", "available": true },
+      { "id": "drumstick_leaves", "name": "Drumstick Leaves", "telugu": "మునగాకు", "price": 20, "emoji": "🌿", "unit": "bunch", "category": "Leafy Greens", "available": true },
+      { "id": "mint_leaves", "name": "Mint Leaves", "telugu": "పుదీనా", "price": 15, "emoji": "🌿", "unit": "bunch", "category": "Leafy Greens", "available": true },
+      { "id": "coriander_leaves", "name": "Coriander Leaves", "telugu": "కొత్తిమీర", "price": 15, "emoji": "🌿", "unit": "bunch", "category": "Leafy Greens", "available": true },
+      { "id": "curry_leaves", "name": "Curry Leaves", "telugu": "కరివేపాకు", "price": 10, "emoji": "🌿", "unit": "bunch", "category": "Leafy Greens", "available": true },
+      { "id": "tender_tamarind_leaves", "name": "Tender Tamarind Leaves", "telugu": "చింతచిగురు", "price": 20, "emoji": "🌿", "unit": "bunch", "category": "Leafy Greens", "available": true },
+
+      { "id": "milk", "name": "Milk", "telugu": "పాలు", "price": 55, "emoji": "🥛", "unit": "litre", "category": "Dairy Products", "available": true },
+      { "id": "curd", "name": "Curd / Yogurt", "telugu": "పెరుగు", "price": 50, "emoji": "🥛", "unit": "kg", "category": "Dairy Products", "available": true },
+      { "id": "paneer", "name": "Paneer", "telugu": "పన్నీర్", "price": 240, "emoji": "🧀", "unit": "kg", "category": "Dairy Products", "available": true },
+
+      { "id": "mushroom", "name": "Mushroom", "telugu": "మష్రూమ్", "price": 100, "emoji": "🍄", "unit": "packet", "category": "Special Items", "available": true },
+      { "id": "banana_leaves", "name": "Banana Leaves", "telugu": "అరటి ఆకులు", "price": 10, "emoji": "🌿", "unit": "piece", "category": "Special Items", "available": true }
+    ]
+  };
+
+  async function importData() {
+    const log = document.getElementById('log');
+    for (let veg of vegetablesData.vegetables) {
+      const discount = Math.floor(Math.random() * 21) + 5;
+      const originalPrice = Math.round(veg.price * (100 / (100 - discount)));
+      await db.collection('products').doc(veg.id).set({
+        id: veg.id,
+        name: veg.name,
+        telugu: veg.telugu,
+        price: veg.price,
+        emoji: veg.emoji,
+        unit: veg.unit,
+        category: veg.category,
+        available: veg.available,
+        originalPrice: originalPrice,
+        discount: discount,
+        rating: (Math.random() * 1.5 + 3.5).toFixed(1),
+        reviews: Math.floor(Math.random() * 200) + 20,
+        bestSeller: Math.random() > 0.85
+      });
+      log.innerHTML += `✅ ${veg.name}\n`;
+    }
+    log.innerHTML += `\n🎉 Done! ${vegetablesData.vegetables.length} products imported.`;
+  }
+  importData();
+</script>
+</body>
+</html>
