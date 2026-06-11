@@ -1,6 +1,7 @@
 /**
  * GREEN MART KAKINADA – MAIN WEBSITE (Firestore version)
  * All original cart, wishlist, checkout, location functions preserved.
+ * Account login uses modal, no alerts/prompts.
  */
 
 let products = [];
@@ -399,7 +400,7 @@ function initLocationButton() {
   });
 }
 
-// ========== SEARCH, COUPON, AUTH, NEWSLETTER, UI ==========
+// ========== SEARCH, COUPON, NEWSLETTER, ETC ==========
 function initSearch() {
   const searchInput = document.getElementById('globalSearch');
   if (searchInput) searchInput.addEventListener('input', (e) => {
@@ -418,22 +419,6 @@ function initCoupon() {
     updateDrawerTotals();
     document.getElementById('couponCode').value = '';
   });
-}
-function initAuth() {
-  const desktopUserBtn = document.getElementById('userBtn');
-  const mobileUserBtn = document.querySelector('.mobile-user');
-  const handleAuth = () => {
-    const isLoggedIn = localStorage.getItem('greenmart_user');
-    if (isLoggedIn) {
-      if (confirm('Logout?')) { localStorage.removeItem('greenmart_user'); location.reload(); }
-    } else {
-      const email = prompt('Enter your email to login/register:');
-      if (email && email.includes('@')) { localStorage.setItem('greenmart_user', email); alert('Logged in!'); location.reload(); }
-      else if (email) alert('Invalid email');
-    }
-  };
-  if (desktopUserBtn) desktopUserBtn.addEventListener('click', handleAuth);
-  if (mobileUserBtn) mobileUserBtn.addEventListener('click', handleAuth);
 }
 function initNewsletter() {
   const subscribeBtn = document.getElementById('newsletterSubscribe');
@@ -531,6 +516,60 @@ function initTestimonialSlider() {
   setInterval(() => { currentSlide = (currentSlide + 1) % slides.length; update(); }, 5000);
 }
 
+// ========== PROFESSIONAL LOGIN MODAL (replaces prompt/confirm) ==========
+function initAuth() {
+  const desktopUserBtn = document.getElementById('userBtn');
+  const mobileUserBtn = document.querySelector('.mobile-user');
+  const modal = document.getElementById('loginModal');
+  const closeModal = document.querySelector('#loginModal .close-modal');
+  const emailInput = document.getElementById('loginEmailInput');
+  const submitBtn = document.getElementById('loginSubmitBtn');
+
+  // Update UI after login/logout
+  const updateUserUI = () => {
+    const user = localStorage.getItem('greenmart_user');
+    const displayName = user ? user.split('@')[0] : 'Account';
+    const btnHtml = user ? `<i class="fas fa-user-check"></i><span>Hi, ${displayName}</span>` : `<i class="far fa-user-circle"></i><span>Account</span>`;
+    if (desktopUserBtn) desktopUserBtn.innerHTML = btnHtml;
+    if (mobileUserBtn) mobileUserBtn.innerHTML = btnHtml;
+  };
+
+  // Show modal when clicking Account if not logged in, else logout confirmation
+  const showLoginModal = () => {
+    if (localStorage.getItem('greenmart_user')) {
+      if (confirm('You are logged in. Press OK to logout, Cancel to stay.')) {
+        localStorage.removeItem('greenmart_user');
+        updateUserUI();
+        location.reload();
+      }
+    } else {
+      modal.style.display = 'flex';
+    }
+  };
+
+  // Handle login from modal
+  const handleLogin = () => {
+    const email = emailInput.value.trim();
+    if (email && email.includes('@')) {
+      localStorage.setItem('greenmart_user', email);
+      modal.style.display = 'none';
+      updateUserUI();
+      location.reload();
+    } else {
+      alert('Please enter a valid email address');
+    }
+  };
+
+  // Attach event listeners
+  if (desktopUserBtn) desktopUserBtn.addEventListener('click', showLoginModal);
+  if (mobileUserBtn) mobileUserBtn.addEventListener('click', showLoginModal);
+  if (submitBtn) submitBtn.addEventListener('click', handleLogin);
+  if (closeModal) closeModal.addEventListener('click', () => modal.style.display = 'none');
+  window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+
+  updateUserUI();
+}
+
 // ========== INITIALISATION ==========
 document.addEventListener('DOMContentLoaded', async () => {
   await loadProducts();
@@ -549,9 +588,4 @@ document.addEventListener('DOMContentLoaded', async () => {
   initCopyCode();
   initLocationButton();
   renderTestimonials();
-
-  const user = localStorage.getItem('greenmart_user');
-  if (user && document.getElementById('userBtn')) {
-    document.getElementById('userBtn').innerHTML = `<i class="fas fa-user-check"></i><span>Hi, ${user.split('@')[0]}</span>`;
-  }
 });
