@@ -30,15 +30,30 @@ const testimonials = [
   { id: 4, name: "Sneha Reddy", rating: 5, text: "The vegetables are farm fresh. Delivery boy was very polite.", avatar: "👩" }
 ];
 
+// Sample fallback products if Firestore fails
+const sampleProducts = [
+  { id: "1", name: "Tomato", telugu: "టమాటో", category: "Fresh Vegetables", price: 40, originalPrice: 50, discount: 20, unit: "kg", rating: 4.5, reviews: 120, emoji: "🍅", bestSeller: true, available: true },
+  { id: "2", name: "Potato", telugu: "బంగాళదుంప", category: "Fresh Vegetables", price: 30, originalPrice: 40, discount: 25, unit: "kg", rating: 4.3, reviews: 98, emoji: "🥔", bestSeller: false, available: true },
+  { id: "3", name: "Onion", telugu: "ఉల్లిపాయ", category: "Fresh Vegetables", price: 35, originalPrice: 45, discount: 22, unit: "kg", rating: 4.4, reviews: 85, emoji: "🧅", bestSeller: true, available: true },
+  { id: "4", name: "Carrot", telugu: "క్యారెట్", category: "Fresh Vegetables", price: 45, originalPrice: 55, discount: 18, unit: "kg", rating: 4.6, reviews: 67, emoji: "🥕", bestSeller: false, available: true },
+  { id: "5", name: "Spinach", telugu: "పాలకూర", category: "Leafy Greens", price: 25, originalPrice: 35, discount: 28, unit: "bunch", rating: 4.7, reviews: 52, emoji: "🥬", bestSeller: true, available: true },
+  { id: "6", name: "Cucumber", telugu: "దోసకాయ", category: "Fresh Vegetables", price: 30, originalPrice: 40, discount: 25, unit: "kg", rating: 4.2, reviews: 73, emoji: "🥒", bestSeller: false, available: true }
+];
+
 // ========== LOAD PRODUCTS FROM FIRESTORE ==========
 async function loadProducts() {
   try {
     const querySnapshot = await db.collection('products').get();
-    products = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    console.log(`✅ Loaded ${products.length} products from Firestore`);
+    if (!querySnapshot.empty) {
+      products = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      console.log(`✅ Loaded ${products.length} products from Firestore`);
+    } else {
+      console.log("No products in Firestore, using sample data");
+      products = sampleProducts;
+    }
   } catch (error) {
     console.error('Firestore error:', error);
-    products = [];
+    products = sampleProducts;
   }
   renderCategories();
   renderProducts(products);
@@ -89,23 +104,22 @@ function renderProducts(productArray) {
     <div class="product-card" data-id="${product.id}">
       ${product.bestSeller ? '<div class="product-badge">🔥 Best Seller</div>' : ''}
       <div class="product-image">
-        <div style="font-size:80px; display:flex; align-items:center; justify-content:center; height:220px; background:#f3f4f6;">${product.emoji}</div>
+        <div style="font-size:80px; display:flex; align-items:center; justify-content:center; height:220px; background:#f3f4f6;">${product.emoji || '🥗'}</div>
         ${!product.available ? '<div class="out-of-stock">Out of Stock</div>' : ''}
         <div class="wishlist-icon ${wishlist.includes(product.id) ? 'active' : ''}" data-id="${product.id}"><i class="far fa-heart"></i></div>
       </div>
       <div class="product-info">
         <div class="product-category">${product.category}</div>
         <div class="product-name">${product.name}</div>
-        <div class="product-name-telugu">${product.telugu}</div>
-        <div class="product-rating"><div class="stars">${'★'.repeat(Math.floor(product.rating))}${'☆'.repeat(5-Math.floor(product.rating))}</div><div class="review-count">(${product.reviews})</div></div>
-        <div class="product-price-row"><span class="current-price">₹${product.price}</span><span class="original-price">₹${product.originalPrice}</span><span class="discount-badge">${product.discount}% OFF</span></div>
-        <div class="product-unit">Per ${product.unit}</div>
+        <div class="product-name-telugu">${product.telugu || ''}</div>
+        <div class="product-rating"><div class="stars">${'★'.repeat(Math.floor(product.rating || 4))}${'☆'.repeat(5-Math.floor(product.rating || 4))}</div><div class="review-count">(${product.reviews || 0})</div></div>
+        <div class="product-price-row"><span class="current-price">₹${product.price}</span><span class="original-price">₹${product.originalPrice}</span><span class="discount-badge">${product.discount || 0}% OFF</span></div>
+        <div class="product-unit">Per ${product.unit || 'kg'}</div>
         <div class="quantity-add"><input type="number" id="qty-${product.id}" class="product-quantity" min="0.5" step="0.5" value="1"><button class="add-to-cart-btn" data-id="${product.id}" ${!product.available ? 'disabled' : ''}>${product.available ? 'Add to Cart' : 'Out of Stock'}</button></div>
         <button class="quickview-btn" data-id="${product.id}">Quick View</button>
       </div>
     </div>`).join('');
 }
-function attachProductEventListeners() { /* event delegation handles everything */ }
 
 // ========== CART & WISHLIST (localStorage) ==========
 function loadCart() {
@@ -296,13 +310,13 @@ function showQuickViewModal(product) {
   if (!modal || !body) return;
   body.innerHTML = `
     <div class="quickview-product">
-      <div class="quickview-image"><div style="font-size:100px;">${product.emoji}</div></div>
+      <div class="quickview-image"><div style="font-size:100px;">${product.emoji || '🥗'}</div></div>
       <div class="quickview-details">
         <h2>${product.name}</h2>
-        <div style="font-size:0.9rem; color:#6B7280;">${product.telugu}</div>
-        <div class="product-rating">${'★'.repeat(Math.floor(product.rating))} (${product.reviews} reviews)</div>
-        <p><strong>Price:</strong> ₹${product.price} <del>₹${product.originalPrice}</del> <span style="color:#22C55E;">${product.discount}% OFF</span></p>
-        <p><strong>Unit:</strong> ${product.unit}</p>
+        <div style="font-size:0.9rem; color:#6B7280;">${product.telugu || ''}</div>
+        <div class="product-rating">${'★'.repeat(Math.floor(product.rating || 4))} (${product.reviews || 0} reviews)</div>
+        <p><strong>Price:</strong> ₹${product.price} <del>₹${product.originalPrice}</del> <span style="color:#22C55E;">${product.discount || 0}% OFF</span></p>
+        <p><strong>Unit:</strong> ${product.unit || 'kg'}</p>
         <p><strong>Category:</strong> ${product.category}</p>
         <p><strong>Stock:</strong> ${product.available ? '✅ In Stock' : '❌ Out of Stock'}</p>
         <p><strong>Description:</strong> Fresh ${product.name} directly sourced from local farms. Premium quality guaranteed.</p>
@@ -334,7 +348,7 @@ function showQuickViewModal(product) {
   }
 }
 
-// ========== CHECKOUT (with Google Maps link) ==========
+// ========== CHECKOUT (WhatsApp) ==========
 function initCheckout() {
   const checkoutBtn = document.getElementById('checkoutBtn');
   if (checkoutBtn) {
@@ -352,7 +366,7 @@ function initCheckout() {
       const delivery = subtotal >= DELIVERY_FEE_THRESHOLD ? 0 : DELIVERY_FEE;
       const discountAmt = couponApplied ? subtotal * (couponDiscount / 100) : 0;
       const total = subtotal + delivery - discountAmt;
-      const orderDetails = cart.map(i => `${i.name}: ${i.quantity} ${i.unit} @ ₹${i.price}`).join('\n');
+      const orderDetails = cart.map(i => `${i.name}: ${i.quantity} ${i.unit || 'kg'} @ ₹${i.price}`).join('\n');
       const message = `🛒 *GREEN MART KAKINADA - New Order*\n\n${orderDetails}\n\n💰 Subtotal: ₹${subtotal}\n🚚 Delivery: ${delivery === 0 ? 'FREE' : '₹' + delivery}\n🎟️ Discount: -₹${discountAmt}\n💵 Total: ₹${total}\n\n👤 Name: ${name}\n📱 Mobile: ${mobile}\n🏠 Address: ${addressWithMap}\n\n✅ Only COD.`;
       window.open(`https://wa.me/919000793333?text=${encodeURIComponent(message)}`, '_blank');
       cart = []; couponApplied = false; couponDiscount = 0; saveCart(); updateCartUI(); closeCartDrawer();
@@ -362,6 +376,13 @@ function initCheckout() {
       document.getElementById('checkoutAddress').value = '';
     });
   }
+}
+function closeCartDrawer() {
+  const drawer = document.getElementById('cartDrawer');
+  const overlay = document.getElementById('drawerOverlay');
+  if (drawer) drawer.classList.remove('open');
+  if (overlay) overlay.classList.remove('active');
+  document.body.style.overflow = '';
 }
 
 // ========== LOCATION AUTO-FILL ==========
@@ -399,7 +420,7 @@ function initLocationButton() {
   });
 }
 
-// ========== SEARCH, COUPON, NEWSLETTER, ETC ==========
+// ========== SEARCH, COUPON, NEWSLETTER ==========
 function initSearch() {
   const searchInput = document.getElementById('globalSearch');
   if (searchInput) searchInput.addEventListener('input', (e) => {
@@ -505,7 +526,7 @@ function renderTestimonials() {
   `).join('');
   initTestimonialSlider();
 }
-let currentSlide = 0, slideInterval;
+let currentSlide = 0;
 function initTestimonialSlider() {
   const track = document.querySelector('.testimonial-track');
   const slides = document.querySelectorAll('.testimonial-card');
@@ -520,7 +541,7 @@ function initTestimonialSlider() {
   setInterval(() => { currentSlide = (currentSlide + 1) % slides.length; update(); }, 5000);
 }
 
-// ========== ACCOUNT MODAL (Customer & Admin) ==========
+// ========== ACCOUNT MODAL ==========
 function initAuth() {
   const desktopUserBtn = document.getElementById('userBtn');
   const mobileUserBtn = document.querySelector('.mobile-user');
@@ -529,6 +550,7 @@ function initAuth() {
   const customerEmailInput = document.getElementById('customerEmailInput');
   const customerLoginBtn = document.getElementById('customerLoginBtn');
   const adminLoginBtn = document.getElementById('adminLoginBtn');
+  const adminLoginFooter = document.getElementById('adminLoginFooter');
 
   const updateUserUI = () => {
     const user = localStorage.getItem('greenmart_user');
@@ -547,7 +569,7 @@ function initAuth() {
       localStorage.setItem('greenmart_user', email);
       closeModalFunc();
       updateUserUI();
-      location.reload();
+      showToast(`Welcome ${email.split('@')[0]}!`);
     } else {
       alert('Please enter a valid email address');
     }
@@ -559,6 +581,7 @@ function initAuth() {
 
   if (desktopUserBtn) desktopUserBtn.addEventListener('click', showModal);
   if (mobileUserBtn) mobileUserBtn.addEventListener('click', showModal);
+  if (adminLoginFooter) adminLoginFooter.addEventListener('click', (e) => { e.preventDefault(); showModal(); });
   if (closeModal) closeModal.addEventListener('click', closeModalFunc);
   if (customerLoginBtn) customerLoginBtn.addEventListener('click', handleCustomerLogin);
   if (adminLoginBtn) adminLoginBtn.addEventListener('click', handleAdminLogin);
