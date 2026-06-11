@@ -10,7 +10,6 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Navbar (unchanged) -->
   <nav class="navbar">
     <div class="nav-container">
       <div class="nav-logo">
@@ -39,7 +38,6 @@
   </nav>
 
   <main>
-    <!-- Hero section (unchanged) -->
     <section class="hero" id="home">
       <div class="hero-overlay"></div>
       <div class="hero-content">
@@ -60,19 +58,16 @@
       </div>
     </section>
 
-    <!-- Categories Section -->
     <section class="categories" id="categories">
       <div class="section-header"><h2>Shop by <span>Category</span></h2><p>Explore our fresh vegetable selection</p></div>
       <div class="categories-grid" id="categoriesGrid"></div>
     </section>
 
-    <!-- Products Section -->
     <section class="featured-products" id="products">
       <div class="section-header"><h2>Today's <span>Fresh Picks</span></h2><p>Handpicked for you from local farms</p></div>
       <div class="product-grid" id="productGrid"></div>
     </section>
 
-    <!-- Promo Banner -->
     <section class="promo-banner" id="offers">
       <div class="promo-content">
         <div class="promo-text">
@@ -85,13 +80,11 @@
       </div>
     </section>
 
-    <!-- Why Choose Us -->
     <section class="features">
       <div class="section-header"><h2>Why <span>Choose Us</span></h2><p>We make fresh vegetable shopping effortless</p></div>
       <div class="features-grid" id="featuresGrid"></div>
     </section>
 
-    <!-- Testimonials -->
     <section class="testimonials">
       <div class="section-header"><h2>What Our <span>Customers Say</span></h2><p>Trusted by thousands</p></div>
       <div class="testimonial-slider">
@@ -102,7 +95,6 @@
       <div class="slider-dots" id="sliderDots"></div>
     </section>
 
-    <!-- Delivery Info -->
     <section class="delivery-info" id="delivery">
       <div class="delivery-grid">
         <div class="delivery-text">
@@ -114,7 +106,6 @@
       </div>
     </section>
 
-    <!-- Newsletter -->
     <section class="newsletter">
       <div class="newsletter-content"><h3>Subscribe to our Newsletter</h3><p>Get fresh updates on offers and discounts</p>
         <div class="newsletter-form"><input type="email" placeholder="Enter your email" id="newsletterEmail"><button id="newsletterSubscribe">Subscribe</button></div>
@@ -122,18 +113,52 @@
     </section>
   </main>
 
-  <footer class="footer"><div class="footer-grid"><div class="footer-col"><h4>Quick Links</h4><ul><li><a href="#home">Home</a></li><li><a href="#categories">Shop</a></li><li><a href="#products">Products</a></li><li><a href="#offers">Offers</a></li></ul></div><div class="footer-col"><h4>Contact Us</h4><ul><li><i class="fas fa-phone"></i> +91 90007 93333</li><li><i class="fas fa-envelope"></i> support@greenmart.com</li><li><i class="fas fa-map-marker-alt"></i> Kakinada, AP</li></ul></div><div class="footer-col"><h4>Follow Us</h4><div class="social-links"><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-facebook"></i></a><a href="#"><i class="fab fa-whatsapp"></i></a></div></div></div><div class="footer-bottom"><p>&copy; 2026 Green Mart Kakinada</p></div></footer>
+  <footer class="footer">
+    <div class="footer-grid">
+      <div class="footer-col"><h4>Quick Links</h4><ul><li><a href="#home">Home</a></li><li><a href="#categories">Shop</a></li><li><a href="#products">Products</a></li><li><a href="#offers">Offers</a></li></ul></div>
+      <div class="footer-col"><h4>Contact Us</h4><ul><li><i class="fas fa-phone"></i> +91 90007 93333</li><li><i class="fas fa-envelope"></i> support@greenmart.com</li><li><i class="fas fa-map-marker-alt"></i> Kakinada, AP</li></ul></div>
+      <div class="footer-col"><h4>Follow Us</h4><div class="social-links"><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-facebook"></i></a><a href="#"><i class="fab fa-whatsapp"></i></a></div></div>
+    </div>
+    <div class="footer-bottom"><p>&copy; 2026 Green Mart Kakinada</p></div>
+  </footer>
 
   <!-- Cart Drawer -->
-  <div class="cart-drawer" id="cartDrawer">...</div> <!-- keep your existing cart drawer HTML -->
+  <div class="cart-drawer" id="cartDrawer">
+    <div class="cart-drawer-header">
+      <h3>Your Cart <span id="cartDrawerCount">0</span></h3>
+      <div><button class="clear-cart-btn" id="clearCartBtn">🗑️ Clear</button><button class="close-drawer" id="closeDrawer">&times;</button></div>
+    </div>
+    <div class="cart-drawer-items" id="cartDrawerItems"></div>
+    <div class="cart-drawer-coupon"><input type="text" placeholder="Coupon code" id="couponCode"><button id="applyCoupon">Apply</button></div>
+    <div class="cart-drawer-details">
+      <div class="input-field"><label>Full Name</label><input type="text" id="checkoutName" placeholder="Enter your full name"></div>
+      <div class="input-field"><label>Mobile Number</label><input type="tel" id="checkoutMobile" placeholder="10-digit mobile number"></div>
+      <div class="input-field"><label>Delivery Address</label><textarea id="checkoutAddress" rows="2" placeholder="House No., Street, Landmark, City, Pincode"></textarea><button type="button" id="getLocationBtn" class="location-btn">📍 Get Current Location</button></div>
+    </div>
+    <div class="cart-drawer-summary">
+      <div class="summary-row">Subtotal: <span id="drawerSubtotal">₹0</span></div>
+      <div class="summary-row">Delivery: <span id="drawerDelivery">₹0</span></div>
+      <div class="summary-row discount-row" id="discountRow" style="display:none;">Discount: <span id="drawerDiscount">₹0</span></div>
+      <div class="summary-row total">Total: <span id="drawerTotal">₹0</span></div>
+      <button class="checkout-btn" id="checkoutBtn">Place Order (COD)</button>
+      <button class="continue-shopping" id="continueShopping">Continue Shopping</button>
+    </div>
+  </div>
   <div class="drawer-overlay" id="drawerOverlay"></div>
-  <div class="quickview-modal" id="quickviewModal">...</div>
+
+  <!-- Quick View Modal -->
+  <div class="quickview-modal" id="quickviewModal">
+    <div class="quickview-content">
+      <button class="close-quickview">&times;</button>
+      <div class="quickview-body" id="quickviewBody"></div>
+    </div>
+  </div>
 
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
-  <!-- Your Firebase configuration -->
+  <!-- Firebase configuration -->
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCgp_la2njOuFtaqP7UOysBeMDOOna22GM",
