@@ -1,7 +1,6 @@
 /**
  * GREEN MART KAKINADA – MAIN WEBSITE (Firestore version)
- * All original cart, wishlist, checkout, location functions preserved.
- * Account login uses modal, no alerts/prompts.
+ * Fixed cart drawer for mobile, account modal, all features working.
  */
 
 let products = [];
@@ -106,9 +105,9 @@ function renderProducts(productArray) {
     </div>`).join('');
   attachProductEventListeners();
 }
-function attachProductEventListeners() { /* listeners are attached via delegation */ }
+function attachProductEventListeners() { /* event delegation handles everything */ }
 
-// ========== CART & WISHLIST (localStorage, no Firestore) ==========
+// ========== CART & WISHLIST (localStorage) ==========
 function loadCart() {
   const saved = localStorage.getItem('greenmart_cart');
   if (saved) cart = JSON.parse(saved);
@@ -438,16 +437,22 @@ function initCartDrawer() {
   const overlay = document.getElementById('drawerOverlay');
   const closeDrawerBtn = document.getElementById('closeDrawer');
   const continueShopping = document.getElementById('continueShopping');
-  if (cartBtn) cartBtn.addEventListener('click', () => {
+  // Also handle mobile cart button from the mobile menu
+  const mobileCartBtn = document.querySelector('.mobile-cart');
+
+  const openDrawer = (e) => {
+    if (e) e.preventDefault();
     drawer.classList.add('open');
     overlay.classList.add('active');
     document.body.style.overflow = 'hidden';
-  });
+  };
   const closeDrawer = () => {
     drawer.classList.remove('open');
     overlay.classList.remove('active');
     document.body.style.overflow = '';
   };
+  if (cartBtn) cartBtn.addEventListener('click', openDrawer);
+  if (mobileCartBtn) mobileCartBtn.addEventListener('click', openDrawer);
   if (closeDrawerBtn) closeDrawerBtn.addEventListener('click', closeDrawer);
   if (continueShopping) continueShopping.addEventListener('click', closeDrawer);
   if (overlay) overlay.addEventListener('click', closeDrawer);
@@ -516,14 +521,15 @@ function initTestimonialSlider() {
   setInterval(() => { currentSlide = (currentSlide + 1) % slides.length; update(); }, 5000);
 }
 
-// ========== PROFESSIONAL LOGIN MODAL (replaces prompt/confirm) ==========
+// ========== ACCOUNT MODAL (Customer & Admin) ==========
 function initAuth() {
   const desktopUserBtn = document.getElementById('userBtn');
   const mobileUserBtn = document.querySelector('.mobile-user');
-  const modal = document.getElementById('loginModal');
-  const closeModal = document.querySelector('#loginModal .close-modal');
-  const emailInput = document.getElementById('loginEmailInput');
-  const submitBtn = document.getElementById('loginSubmitBtn');
+  const modal = document.getElementById('accountModal');
+  const closeModal = document.querySelector('#accountModal .close-modal');
+  const customerEmailInput = document.getElementById('customerEmailInput');
+  const customerLoginBtn = document.getElementById('customerLoginBtn');
+  const adminLoginBtn = document.getElementById('adminLoginBtn');
 
   // Update UI after login/logout
   const updateUserUI = () => {
@@ -534,25 +540,19 @@ function initAuth() {
     if (mobileUserBtn) mobileUserBtn.innerHTML = btnHtml;
   };
 
-  // Show modal when clicking Account if not logged in, else logout confirmation
-  const showLoginModal = () => {
-    if (localStorage.getItem('greenmart_user')) {
-      if (confirm('You are logged in. Press OK to logout, Cancel to stay.')) {
-        localStorage.removeItem('greenmart_user');
-        updateUserUI();
-        location.reload();
-      }
-    } else {
-      modal.style.display = 'flex';
-    }
+  const showModal = () => {
+    modal.style.display = 'flex';
   };
 
-  // Handle login from modal
-  const handleLogin = () => {
-    const email = emailInput.value.trim();
+  const closeModalFunc = () => {
+    modal.style.display = 'none';
+  };
+
+  const handleCustomerLogin = () => {
+    const email = customerEmailInput.value.trim();
     if (email && email.includes('@')) {
       localStorage.setItem('greenmart_user', email);
-      modal.style.display = 'none';
+      closeModalFunc();
       updateUserUI();
       location.reload();
     } else {
@@ -560,12 +560,17 @@ function initAuth() {
     }
   };
 
-  // Attach event listeners
-  if (desktopUserBtn) desktopUserBtn.addEventListener('click', showLoginModal);
-  if (mobileUserBtn) mobileUserBtn.addEventListener('click', showLoginModal);
-  if (submitBtn) submitBtn.addEventListener('click', handleLogin);
-  if (closeModal) closeModal.addEventListener('click', () => modal.style.display = 'none');
-  window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+  const handleAdminLogin = () => {
+    window.location.href = 'admin-login.html';
+  };
+
+  // Attach events
+  if (desktopUserBtn) desktopUserBtn.addEventListener('click', showModal);
+  if (mobileUserBtn) mobileUserBtn.addEventListener('click', showModal);
+  if (closeModal) closeModal.addEventListener('click', closeModalFunc);
+  if (customerLoginBtn) customerLoginBtn.addEventListener('click', handleCustomerLogin);
+  if (adminLoginBtn) adminLoginBtn.addEventListener('click', handleAdminLogin);
+  window.addEventListener('click', (e) => { if (e.target === modal) closeModalFunc(); });
 
   updateUserUI();
 }
