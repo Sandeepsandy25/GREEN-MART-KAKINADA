@@ -3,6 +3,7 @@
  * Features: product loading from Firestore, cart (localStorage), wishlist, checkout, location, search, coupons, newsletter, account modal.
  * Fully responsive, works on desktop and mobile.
  * Updated delivery charges: <100=₹50, 100-200=₹30, 200-500=₹20, >=500=Free
+ * Flexible quantity: supports 250g (0.25 kg), 500g (0.5 kg), 1kg+, and whole numbers for bunch/piece.
  */
 
 let products = [];
@@ -10,8 +11,6 @@ let cart = [];
 let wishlist = [];
 let couponApplied = false;
 let couponDiscount = 0;
-
-// No old delivery constants – now using getDeliveryFee()
 
 // Features Data (static)
 const features = [
@@ -41,7 +40,7 @@ const sampleProducts = [
   { id: "6", name: "Cucumber", telugu: "దోసకాయ", category: "Fresh Vegetables", price: 30, originalPrice: 40, discount: 25, unit: "kg", rating: 4.2, reviews: 73, emoji: "🥒", bestSeller: false, available: true }
 ];
 
-// ========== DELIVERY FEE BASED ON SUBTOTAL (NEW LOGIC) ==========
+// ========== DELIVERY FEE BASED ON SUBTOTAL ==========
 function getDeliveryFee(subtotal) {
   if (subtotal === 0) return 0;
   if (subtotal < 100) return 50;          // Below ₹100 → ₹50
@@ -110,25 +109,58 @@ function renderProducts(productArray) {
   const container = document.getElementById('productGrid');
   if (!container) return;
   if (!productArray.length) { container.innerHTML = '<div style="text-align:center; padding:40px;">No products found.</div>'; return; }
-  container.innerHTML = productArray.map(product => `
-    <div class="product-card" data-id="${product.id}">
-      ${product.bestSeller ? '<div class="product-badge">🔥 Best Seller</div>' : ''}
-      <div class="product-image">
-        <div style="font-size:80px; display:flex; align-items:center; justify-content:center; height:220px; background:#f3f4f6;">${product.emoji || '🥗'}</div>
-        ${!product.available ? '<div class="out-of-stock">Out of Stock</div>' : ''}
-        <div class="wishlist-icon ${wishlist.includes(product.id) ? 'active' : ''}" data-id="${product.id}"><i class="far fa-heart"></i></div>
+  container.innerHTML = productArray.map(product => {
+    // Determine quantity input attributes based on unit type
+    const isKg = product.unit === 'kg';
+    const step = isKg ? '0.1' : '1';
+    const min = isKg ? '0.1' : '1';
+    const quickButtons = isKg ? `
+      <div class="quick-qty-buttons" style="display:flex; gap:6px; margin-top:8px;">
+        <button type="button" class="quick-qty" data-id="${product.id}" data-qty="0.25">250g</button>
+        <button type="button" class="quick-qty" data-id="${product.id}" data-qty="0.5">500g</button>
+        <button type="button" class="quick-qty" data-id="${product.id}" data-qty="1">1kg</button>
+        <button type="button" class="quick-qty" data-id="${product.id}" data-qty="2">2kg</button>
       </div>
-      <div class="product-info">
-        <div class="product-category">${product.category}</div>
-        <div class="product-name">${product.name}</div>
-        <div class="product-name-telugu">${product.telugu || ''}</div>
-        <div class="product-rating"><div class="stars">${'★'.repeat(Math.floor(product.rating || 4))}${'☆'.repeat(5-Math.floor(product.rating || 4))}</div><div class="review-count">(${product.reviews || 0})</div></div>
-        <div class="product-price-row"><span class="current-price">₹${product.price}</span><span class="original-price">₹${product.originalPrice}</span><span class="discount-badge">${product.discount || 0}% OFF</span></div>
-        <div class="product-unit">Per ${product.unit || 'kg'}</div>
-        <div class="quantity-add"><input type="number" id="qty-${product.id}" class="product-quantity" min="0.5" step="0.5" value="1"><button class="add-to-cart-btn" data-id="${product.id}" ${!product.available ? 'disabled' : ''}>${product.available ? 'Add to Cart' : 'Out of Stock'}</button></div>
-        <button class="quickview-btn" data-id="${product.id}">Quick View</button>
+    ` : '';
+    return `
+      <div class="product-card" data-id="${product.id}">
+        ${product.bestSeller ? '<div class="product-badge">🔥 Best Seller</div>' : ''}
+        <div class="product-image">
+          <div style="font-size:80px; display:flex; align-items:center; justify-content:center; height:220px; background:#f3f4f6;">${product.emoji || '🥗'}</div>
+          ${!product.available ? '<div class="out-of-stock">Out of Stock</div>' : ''}
+          <div class="wishlist-icon ${wishlist.includes(product.id) ? 'active' : ''}" data-id="${product.id}"><i class="far fa-heart"></i></div>
+        </div>
+        <div class="product-info">
+          <div class="product-category">${product.category}</div>
+          <div class="product-name">${product.name}</div>
+          <div class="product-name-telugu">${product.telugu || ''}</div>
+          <div class="product-rating"><div class="stars">${'★'.repeat(Math.floor(product.rating || 4))}${'☆'.repeat(5-Math.floor(product.rating || 4))}</div><div class="review-count">(${product.reviews || 0})</div></div>
+          <div class="product-price-row"><span class="current-price">₹${product.price}</span><span class="original-price">₹${product.originalPrice}</span><span class="discount-badge">${product.discount || 0}% OFF</span></div>
+          <div class="product-unit">Per ${product.unit}</div>
+          <div class="quantity-add">
+            <input type="number" id="qty-${product.id}" class="product-quantity" min="${min}" step="${step}" value="1">
+            <button class="add-to-cart-btn" data-id="${product.id}" ${!product.available ? 'disabled' : ''}>${product.available ? 'Add to Cart' : 'Out of Stock'}</button>
+          </div>
+          ${quickButtons}
+          <button class="quickview-btn" data-id="${product.id}">Quick View</button>
+        </div>
       </div>
-    </div>`).join('');
+    `;
+  }).join('');
+  
+  // Attach quick quantity button events
+  document.querySelectorAll('.quick-qty').forEach(btn => {
+    btn.removeEventListener('click', handleQuickQty);
+    btn.addEventListener('click', handleQuickQty);
+  });
+}
+function handleQuickQty(e) {
+  const btn = e.currentTarget;
+  const id = btn.dataset.id;
+  const qty = parseFloat(btn.dataset.qty);
+  const qtyInput = document.getElementById(`qty-${id}`);
+  if (qtyInput) qtyInput.value = qty;
+  showToast(`Quantity set to ${qty} ${qty >= 1 ? 'kg' : 'g'}`);
 }
 
 // ========== CART & WISHLIST (localStorage) ==========
@@ -176,15 +208,16 @@ function updateCartDrawer() {
   }
   drawerItems.innerHTML = cart.map(item => {
     const product = products.find(p => p.id == item.id);
+    const unitDisplay = item.unit === 'kg' ? `${item.quantity} kg` : `${Math.round(item.quantity)} ${item.unit}`;
     return `
       <div class="cart-item" data-id="${item.id}">
         <div class="cart-item-image">${product?.emoji || '🥗'}</div>
         <div class="cart-item-details">
           <div class="cart-item-name">${item.name}</div>
-          <div class="cart-item-price">₹${item.price}</div>
+          <div class="cart-item-price">₹${item.price} / ${item.unit}</div>
           <div class="cart-item-quantity">
             <button class="quantity-btn dec-qty" data-id="${item.id}">-</button>
-            <span>${item.quantity}</span>
+            <span>${unitDisplay}</span>
             <button class="quantity-btn inc-qty" data-id="${item.id}">+</button>
           </div>
         </div>
@@ -220,14 +253,20 @@ function handleRemove(e) {
 function updateQuantity(id, action) {
   const item = cart.find(i => i.id == id);
   if (!item) return;
-  if (action === 'inc') item.quantity++;
-  else if (action === 'dec') {
-    if (item.quantity <= 0.5) {
-      cart = cart.filter(i => i.id != id);
-    } else {
-      item.quantity -= 0.5;
-      item.quantity = Math.round(item.quantity * 10) / 10;
-    }
+  const product = products.find(p => p.id == id);
+  const isKg = product?.unit === 'kg';
+  const step = isKg ? 0.1 : 1;
+  let newQty = item.quantity;
+  if (action === 'inc') newQty += step;
+  else if (action === 'dec') newQty -= step;
+  
+  if (newQty <= 0) {
+    cart = cart.filter(i => i.id != id);
+  } else {
+    // Round to 2 decimal places for kg, integer for others
+    if (isKg) newQty = Math.round(newQty * 100) / 100;
+    else newQty = Math.round(newQty);
+    item.quantity = newQty;
   }
   saveCart();
   updateCartUI();
@@ -282,13 +321,27 @@ function setupGlobalEventDelegation() {
       const qtyInput = document.getElementById(`qty-${id}`);
       let quantity = parseFloat(qtyInput?.value || 1);
       if (isNaN(quantity) || quantity <= 0) quantity = 1;
-      quantity = Math.round(quantity * 10) / 10;
+      // For non-kg items, ensure integer quantity
+      if (product.unit !== 'kg') {
+        quantity = Math.round(quantity);
+        if (quantity < 1) quantity = 1;
+      } else {
+        quantity = Math.round(quantity * 100) / 100;
+      }
       const existing = cart.find(i => i.id == id);
       if (existing) existing.quantity += quantity;
-      else cart.push({ id: product.id, name: product.name, price: product.price, quantity, unit: product.unit, emoji: product.emoji });
+      else cart.push({ 
+        id: product.id, 
+        name: product.name, 
+        price: product.price, 
+        quantity, 
+        unit: product.unit, 
+        emoji: product.emoji 
+      });
       saveCart();
       updateCartUI();
-      showToast(`${product.name} (${quantity} ${product.unit}) added to cart!`);
+      const unitDisplay = product.unit === 'kg' ? `${quantity} kg` : `${quantity} ${product.unit}`;
+      showToast(`${product.name} (${unitDisplay}) added to cart!`);
       if (qtyInput) qtyInput.value = 1;
     }
     const wishBtn = e.target.closest('.wishlist-icon');
@@ -324,6 +377,9 @@ function showQuickViewModal(product) {
   const modal = document.getElementById('quickviewModal');
   const body = document.getElementById('quickviewBody');
   if (!modal || !body) return;
+  const isKg = product.unit === 'kg';
+  const step = isKg ? '0.1' : '1';
+  const min = isKg ? '0.1' : '1';
   body.innerHTML = `
     <div class="quickview-product">
       <div class="quickview-image"><div style="font-size:100px;">${product.emoji || '🥗'}</div></div>
@@ -332,13 +388,13 @@ function showQuickViewModal(product) {
         <div style="font-size:0.9rem; color:#6B7280;">${product.telugu || ''}</div>
         <div class="product-rating">${'★'.repeat(Math.floor(product.rating || 4))} (${product.reviews || 0} reviews)</div>
         <p><strong>Price:</strong> ₹${product.price} <del>₹${product.originalPrice}</del> <span style="color:#22C55E;">${product.discount || 0}% OFF</span></p>
-        <p><strong>Unit:</strong> ${product.unit || 'kg'}</p>
+        <p><strong>Unit:</strong> ${product.unit}</p>
         <p><strong>Category:</strong> ${product.category}</p>
         <p><strong>Stock:</strong> ${product.available ? '✅ In Stock' : '❌ Out of Stock'}</p>
         <p><strong>Description:</strong> Fresh ${product.name} directly sourced from local farms. Premium quality guaranteed.</p>
         <div style="margin-top:20px;">
-          <input type="number" id="quick-qty" min="0.5" step="0.5" value="1" style="width:80px; padding:8px; border-radius:8px;">
-          <button id="quick-add-cart" data-id="${product.id}" style="padding:8px 16px; background:#22C55E; color:white; border:none; border-radius:8px;">Add to Cart</button>
+          <input type="number" id="quick-qty" min="${min}" step="${step}" value="1" style="width:100px; padding:8px; border-radius:8px;">
+          <button id="quick-add-cart" data-id="${product.id}" style="padding:8px 16px; background:#22C55E; color:white; border:none; border-radius:8px; margin-left:10px;">Add to Cart</button>
         </div>
       </div>
     </div>
@@ -350,7 +406,9 @@ function showQuickViewModal(product) {
   const addBtn = body.querySelector('#quick-add-cart');
   if (addBtn) {
     addBtn.addEventListener('click', () => {
-      const qty = parseFloat(document.getElementById('quick-qty').value);
+      let qty = parseFloat(document.getElementById('quick-qty').value);
+      if (isNaN(qty) || qty <= 0) qty = 1;
+      if (product.unit !== 'kg') qty = Math.round(qty);
       if (product && qty > 0) {
         const existing = cart.find(i => i.id == product.id);
         if (existing) existing.quantity += qty;
@@ -382,7 +440,10 @@ function initCheckout() {
       const delivery = getDeliveryFee(subtotal);
       const discountAmt = couponApplied ? subtotal * (couponDiscount / 100) : 0;
       const total = subtotal + delivery - discountAmt;
-      const orderDetails = cart.map(i => `${i.name}: ${i.quantity} ${i.unit || 'kg'} @ ₹${i.price}`).join('\n');
+      const orderDetails = cart.map(i => {
+        const unitDisplay = i.unit === 'kg' ? `${i.quantity} kg` : `${Math.round(i.quantity)} ${i.unit}`;
+        return `${i.name}: ${unitDisplay} @ ₹${i.price}`;
+      }).join('\n');
       const deliveryText = delivery === 0 ? 'FREE' : `₹${delivery}`;
       const message = `🛒 *GREEN MART KAKINADA - New Order*\n\n${orderDetails}\n\n💰 Subtotal: ₹${subtotal}\n🚚 Delivery: ${deliveryText}\n🎟️ Discount: -₹${discountAmt}\n💵 Total: ₹${total}\n\n👤 Name: ${name}\n📱 Mobile: ${mobile}\n🏠 Address: ${addressWithMap}\n\n✅ Only COD.`;
       window.open(`https://wa.me/919000793333?text=${encodeURIComponent(message)}`, '_blank');
