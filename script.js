@@ -1,7 +1,7 @@
 /**
  * GREEN MART KAKINADA – MAIN WEBSITE (Firestore version)
- * Features: product loading from Firestore, cart (localStorage), wishlist, checkout, location, search, coupons, newsletter, account modal.
- * Fully responsive, works on desktop and mobile.
+ * Features: product loading from Firestore, cart (localStorage), wishlist, checkout, location, search, newsletter, account modal.
+ * No offers/discounts – only price shown.
  * Updated delivery charges: <100=₹50, 100-200=₹30, 200-500=₹20, >=500=Free
  * Flexible quantity: supports 250g (0.25 kg), 500g (0.5 kg), 1kg+, and whole numbers for bunch/piece.
  */
@@ -9,8 +9,6 @@
 let products = [];
 let cart = [];
 let wishlist = [];
-let couponApplied = false;
-let couponDiscount = 0;
 
 // Features Data (static)
 const features = [
@@ -30,26 +28,26 @@ const testimonials = [
   { id: 4, name: "Sneha Reddy", rating: 5, text: "The vegetables are farm fresh. Delivery boy was very polite.", avatar: "👩" }
 ];
 
-// Sample fallback products if Firestore fails
+// Sample fallback products if Firestore fails (no discount fields)
 const sampleProducts = [
-  { id: "1", name: "Tomato", telugu: "టమాటో", category: "Fresh Vegetables", price: 40, originalPrice: 50, discount: 20, unit: "kg", rating: 4.5, reviews: 120, emoji: "🍅", bestSeller: true, available: true },
-  { id: "2", name: "Potato", telugu: "బంగాళదుంప", category: "Fresh Vegetables", price: 30, originalPrice: 40, discount: 25, unit: "kg", rating: 4.3, reviews: 98, emoji: "🥔", bestSeller: false, available: true },
-  { id: "3", name: "Onion", telugu: "ఉల్లిపాయ", category: "Fresh Vegetables", price: 35, originalPrice: 45, discount: 22, unit: "kg", rating: 4.4, reviews: 85, emoji: "🧅", bestSeller: true, available: true },
-  { id: "4", name: "Carrot", telugu: "క్యారెట్", category: "Fresh Vegetables", price: 45, originalPrice: 55, discount: 18, unit: "kg", rating: 4.6, reviews: 67, emoji: "🥕", bestSeller: false, available: true },
-  { id: "5", name: "Spinach", telugu: "పాలకూర", category: "Leafy Greens", price: 25, originalPrice: 35, discount: 28, unit: "bunch", rating: 4.7, reviews: 52, emoji: "🥬", bestSeller: true, available: true },
-  { id: "6", name: "Cucumber", telugu: "దోసకాయ", category: "Fresh Vegetables", price: 30, originalPrice: 40, discount: 25, unit: "kg", rating: 4.2, reviews: 73, emoji: "🥒", bestSeller: false, available: true }
+  { id: "1", name: "Tomato", telugu: "టమాటో", category: "Fresh Vegetables", price: 40, unit: "kg", rating: 4.5, reviews: 120, emoji: "🍅", bestSeller: true, available: true },
+  { id: "2", name: "Potato", telugu: "బంగాళదుంప", category: "Fresh Vegetables", price: 30, unit: "kg", rating: 4.3, reviews: 98, emoji: "🥔", bestSeller: false, available: true },
+  { id: "3", name: "Onion", telugu: "ఉల్లిపాయ", category: "Fresh Vegetables", price: 35, unit: "kg", rating: 4.4, reviews: 85, emoji: "🧅", bestSeller: true, available: true },
+  { id: "4", name: "Carrot", telugu: "క్యారెట్", category: "Fresh Vegetables", price: 45, unit: "kg", rating: 4.6, reviews: 67, emoji: "🥕", bestSeller: false, available: true },
+  { id: "5", name: "Spinach", telugu: "పాలకూర", category: "Leafy Greens", price: 25, unit: "bunch", rating: 4.7, reviews: 52, emoji: "🥬", bestSeller: true, available: true },
+  { id: "6", name: "Cucumber", telugu: "దోసకాయ", category: "Fresh Vegetables", price: 30, unit: "kg", rating: 4.2, reviews: 73, emoji: "🥒", bestSeller: false, available: true }
 ];
 
-// ========== DELIVERY FEE BASED ON SUBTOTAL ==========
+// ========== DELIVERY FEE ==========
 function getDeliveryFee(subtotal) {
   if (subtotal === 0) return 0;
-  if (subtotal < 100) return 50;          // Below ₹100 → ₹50
-  if (subtotal < 200) return 30;          // ₹100 to ₹199 → ₹30
-  if (subtotal < 500) return 20;          // ₹200 to ₹499 → ₹20
-  return 0;                               // ₹500+ → Free
+  if (subtotal < 100) return 50;
+  if (subtotal < 200) return 30;
+  if (subtotal < 500) return 20;
+  return 0;
 }
 
-// ========== LOAD PRODUCTS FROM FIRESTORE ==========
+// ========== LOAD PRODUCTS ==========
 async function loadProducts() {
   try {
     const querySnapshot = await db.collection('products').get();
@@ -110,12 +108,11 @@ function renderProducts(productArray) {
   if (!container) return;
   if (!productArray.length) { container.innerHTML = '<div style="text-align:center; padding:40px;">No products found.</div>'; return; }
   container.innerHTML = productArray.map(product => {
-    // Determine quantity input attributes based on unit type
     const isKg = product.unit === 'kg';
     const step = isKg ? '0.1' : '1';
     const min = isKg ? '0.1' : '1';
     const quickButtons = isKg ? `
-      <div class="quick-qty-buttons" style="display:flex; gap:6px; margin-top:8px;">
+      <div class="quick-qty-buttons">
         <button type="button" class="quick-qty" data-id="${product.id}" data-qty="0.25">250g</button>
         <button type="button" class="quick-qty" data-id="${product.id}" data-qty="0.5">500g</button>
         <button type="button" class="quick-qty" data-id="${product.id}" data-qty="1">1kg</button>
@@ -135,7 +132,8 @@ function renderProducts(productArray) {
           <div class="product-name">${product.name}</div>
           <div class="product-name-telugu">${product.telugu || ''}</div>
           <div class="product-rating"><div class="stars">${'★'.repeat(Math.floor(product.rating || 4))}${'☆'.repeat(5-Math.floor(product.rating || 4))}</div><div class="review-count">(${product.reviews || 0})</div></div>
-          <div class="product-price-row"><span class="current-price">₹${product.price}</span><span class="original-price">₹${product.originalPrice}</span><span class="discount-badge">${product.discount || 0}% OFF</span></div>
+          <!-- Only current price shown, no discount info -->
+          <div class="product-price-row"><span class="current-price">₹${product.price}</span></div>
           <div class="product-unit">Per ${product.unit}</div>
           <div class="quantity-add">
             <input type="number" id="qty-${product.id}" class="product-quantity" min="${min}" step="${step}" value="1">
@@ -147,8 +145,6 @@ function renderProducts(productArray) {
       </div>
     `;
   }).join('');
-  
-  // Attach quick quantity button events
   document.querySelectorAll('.quick-qty').forEach(btn => {
     btn.removeEventListener('click', handleQuickQty);
     btn.addEventListener('click', handleQuickQty);
@@ -163,7 +159,7 @@ function handleQuickQty(e) {
   showToast(`Quantity set to ${qty} ${qty >= 1 ? 'kg' : 'g'}`);
 }
 
-// ========== CART & WISHLIST (localStorage) ==========
+// ========== CART & WISHLIST ==========
 function loadCart() {
   const saved = localStorage.getItem('greenmart_cart');
   if (saved) cart = JSON.parse(saved);
@@ -259,11 +255,9 @@ function updateQuantity(id, action) {
   let newQty = item.quantity;
   if (action === 'inc') newQty += step;
   else if (action === 'dec') newQty -= step;
-  
   if (newQty <= 0) {
     cart = cart.filter(i => i.id != id);
   } else {
-    // Round to 2 decimal places for kg, integer for others
     if (isKg) newQty = Math.round(newQty * 100) / 100;
     else newQty = Math.round(newQty);
     item.quantity = newQty;
@@ -278,8 +272,6 @@ function removeCartItem(id) {
 }
 function clearCart() {
   cart = [];
-  couponApplied = false;
-  couponDiscount = 0;
   saveCart();
   updateCartUI();
   showToast('Cart cleared');
@@ -287,29 +279,20 @@ function clearCart() {
 function updateDrawerTotals() {
   const subtotal = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
   const deliveryCharge = getDeliveryFee(subtotal);
-  const discountAmount = couponApplied ? subtotal * (couponDiscount / 100) : 0;
-  const total = subtotal + deliveryCharge - discountAmount;
-  
+  const total = subtotal + deliveryCharge;
   const subtotalSpan = document.getElementById('drawerSubtotal');
   const deliverySpan = document.getElementById('drawerDelivery');
-  const discountSpan = document.getElementById('drawerDiscount');
   const totalSpan = document.getElementById('drawerTotal');
-  const discountRow = document.getElementById('discountRow');
-  
   if (subtotalSpan) subtotalSpan.innerText = `₹${subtotal.toFixed(2)}`;
   if (deliverySpan) {
     if (subtotal === 0) deliverySpan.innerText = '₹0';
     else if (deliveryCharge === 0) deliverySpan.innerText = 'Free';
     else deliverySpan.innerText = `₹${deliveryCharge}`;
   }
-  if (discountSpan && discountRow) {
-    discountSpan.innerText = `-₹${discountAmount.toFixed(2)}`;
-    discountRow.style.display = couponApplied ? 'flex' : 'none';
-  }
   if (totalSpan) totalSpan.innerText = `₹${total.toFixed(2)}`;
 }
 
-// ========== EVENT HANDLERS (delegation) ==========
+// ========== EVENT HANDLERS ==========
 function setupGlobalEventDelegation() {
   document.addEventListener('click', (e) => {
     const addBtn = e.target.closest('.add-to-cart-btn');
@@ -321,7 +304,6 @@ function setupGlobalEventDelegation() {
       const qtyInput = document.getElementById(`qty-${id}`);
       let quantity = parseFloat(qtyInput?.value || 1);
       if (isNaN(quantity) || quantity <= 0) quantity = 1;
-      // For non-kg items, ensure integer quantity
       if (product.unit !== 'kg') {
         quantity = Math.round(quantity);
         if (quantity < 1) quantity = 1;
@@ -330,14 +312,7 @@ function setupGlobalEventDelegation() {
       }
       const existing = cart.find(i => i.id == id);
       if (existing) existing.quantity += quantity;
-      else cart.push({ 
-        id: product.id, 
-        name: product.name, 
-        price: product.price, 
-        quantity, 
-        unit: product.unit, 
-        emoji: product.emoji 
-      });
+      else cart.push({ id: product.id, name: product.name, price: product.price, quantity, unit: product.unit, emoji: product.emoji });
       saveCart();
       updateCartUI();
       const unitDisplay = product.unit === 'kg' ? `${quantity} kg` : `${quantity} ${product.unit}`;
@@ -387,8 +362,7 @@ function showQuickViewModal(product) {
         <h2>${product.name}</h2>
         <div style="font-size:0.9rem; color:#6B7280;">${product.telugu || ''}</div>
         <div class="product-rating">${'★'.repeat(Math.floor(product.rating || 4))} (${product.reviews || 0} reviews)</div>
-        <p><strong>Price:</strong> ₹${product.price} <del>₹${product.originalPrice}</del> <span style="color:#22C55E;">${product.discount || 0}% OFF</span></p>
-        <p><strong>Unit:</strong> ${product.unit}</p>
+        <p><strong>Price:</strong> ₹${product.price} per ${product.unit}</p>
         <p><strong>Category:</strong> ${product.category}</p>
         <p><strong>Stock:</strong> ${product.available ? '✅ In Stock' : '❌ Out of Stock'}</p>
         <p><strong>Description:</strong> Fresh ${product.name} directly sourced from local farms. Premium quality guaranteed.</p>
@@ -422,7 +396,7 @@ function showQuickViewModal(product) {
   }
 }
 
-// ========== CHECKOUT (WhatsApp) with new delivery logic ==========
+// ========== CHECKOUT (WhatsApp) ==========
 function initCheckout() {
   const checkoutBtn = document.getElementById('checkoutBtn');
   if (checkoutBtn) {
@@ -438,16 +412,15 @@ function initCheckout() {
       const addressWithMap = `${address}\n🗺️ View on map: ${mapsLink}`;
       const subtotal = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
       const delivery = getDeliveryFee(subtotal);
-      const discountAmt = couponApplied ? subtotal * (couponDiscount / 100) : 0;
-      const total = subtotal + delivery - discountAmt;
+      const total = subtotal + delivery;
       const orderDetails = cart.map(i => {
         const unitDisplay = i.unit === 'kg' ? `${i.quantity} kg` : `${Math.round(i.quantity)} ${i.unit}`;
         return `${i.name}: ${unitDisplay} @ ₹${i.price}`;
       }).join('\n');
       const deliveryText = delivery === 0 ? 'FREE' : `₹${delivery}`;
-      const message = `🛒 *GREEN MART KAKINADA - New Order*\n\n${orderDetails}\n\n💰 Subtotal: ₹${subtotal}\n🚚 Delivery: ${deliveryText}\n🎟️ Discount: -₹${discountAmt}\n💵 Total: ₹${total}\n\n👤 Name: ${name}\n📱 Mobile: ${mobile}\n🏠 Address: ${addressWithMap}\n\n✅ Only COD.`;
+      const message = `🛒 *GREEN MART KAKINADA - New Order*\n\n${orderDetails}\n\n💰 Subtotal: ₹${subtotal}\n🚚 Delivery: ${deliveryText}\n💵 Total: ₹${total}\n\n👤 Name: ${name}\n📱 Mobile: ${mobile}\n🏠 Address: ${addressWithMap}\n\n✅ Only COD.`;
       window.open(`https://wa.me/919000793333?text=${encodeURIComponent(message)}`, '_blank');
-      cart = []; couponApplied = false; couponDiscount = 0; saveCart(); updateCartUI(); closeCartDrawer();
+      cart = []; saveCart(); updateCartUI(); closeCartDrawer();
       showToast('Order placed! Check your WhatsApp');
       document.getElementById('checkoutName').value = '';
       document.getElementById('checkoutMobile').value = '';
@@ -498,24 +471,13 @@ function initLocationButton() {
   });
 }
 
-// ========== SEARCH, COUPON, NEWSLETTER ==========
+// ========== SEARCH, NEWSLETTER ==========
 function initSearch() {
   const searchInput = document.getElementById('globalSearch');
   if (searchInput) searchInput.addEventListener('input', (e) => {
     const query = e.target.value.toLowerCase();
     const filtered = products.filter(p => p.name.toLowerCase().includes(query) || (p.telugu && p.telugu.toLowerCase().includes(query)));
     renderProducts(filtered);
-  });
-}
-function initCoupon() {
-  const applyBtn = document.getElementById('applyCoupon');
-  if (applyBtn) applyBtn.addEventListener('click', () => {
-    const code = document.getElementById('couponCode').value.trim().toUpperCase();
-    if (code === 'FRESH20') { couponApplied = true; couponDiscount = 20; showToast('🎉 20% off applied!'); }
-    else if (code === 'WELCOME10') { couponApplied = true; couponDiscount = 10; showToast('🎉 10% off applied!'); }
-    else { couponApplied = false; couponDiscount = 0; showToast('❌ Invalid coupon'); }
-    updateDrawerTotals();
-    document.getElementById('couponCode').value = '';
   });
 }
 function initNewsletter() {
@@ -537,7 +499,6 @@ function initCartDrawer() {
   const closeDrawerBtn = document.getElementById('closeDrawer');
   const continueShopping = document.getElementById('continueShopping');
   const mobileCartBtn = document.querySelector('.mobile-cart');
-
   const openDrawer = (e) => {
     if (e) e.preventDefault();
     drawer.classList.add('open');
@@ -580,10 +541,6 @@ function initCTAScroll() {
   const explore = document.getElementById('exploreCategoriesBtn');
   if (shopNow) shopNow.addEventListener('click', () => document.querySelector('#products')?.scrollIntoView({ behavior: 'smooth' }));
   if (explore) explore.addEventListener('click', () => document.querySelector('#categories')?.scrollIntoView({ behavior: 'smooth' }));
-}
-function initCopyCode() {
-  const copyBtn = document.getElementById('copyCodeBtn');
-  if (copyBtn) copyBtn.addEventListener('click', () => { navigator.clipboard.writeText('FRESH20'); showToast('Coupon code copied!'); });
 }
 function showToast(message) {
   let toast = document.querySelector('.toast');
@@ -629,7 +586,6 @@ function initAuth() {
   const customerLoginBtn = document.getElementById('customerLoginBtn');
   const adminLoginBtn = document.getElementById('adminLoginBtn');
   const adminLoginFooter = document.getElementById('adminLoginFooter');
-
   const updateUserUI = () => {
     const user = localStorage.getItem('greenmart_user');
     const displayName = user ? user.split('@')[0] : 'Account';
@@ -637,10 +593,8 @@ function initAuth() {
     if (desktopUserBtn) desktopUserBtn.innerHTML = btnHtml;
     if (mobileUserBtn) mobileUserBtn.innerHTML = btnHtml;
   };
-
   const showModal = () => { modal.style.display = 'flex'; };
   const closeModalFunc = () => { modal.style.display = 'none'; };
-
   const handleCustomerLogin = () => {
     const email = customerEmailInput.value.trim();
     if (email && email.includes('@')) {
@@ -652,11 +606,9 @@ function initAuth() {
       alert('Please enter a valid email address');
     }
   };
-
   const handleAdminLogin = () => {
     window.location.href = 'admin-login.html';
   };
-
   if (desktopUserBtn) desktopUserBtn.addEventListener('click', showModal);
   if (mobileUserBtn) mobileUserBtn.addEventListener('click', showModal);
   if (adminLoginFooter) adminLoginFooter.addEventListener('click', (e) => { e.preventDefault(); showModal(); });
@@ -664,7 +616,6 @@ function initAuth() {
   if (customerLoginBtn) customerLoginBtn.addEventListener('click', handleCustomerLogin);
   if (adminLoginBtn) adminLoginBtn.addEventListener('click', handleAdminLogin);
   window.addEventListener('click', (e) => { if (e.target === modal) closeModalFunc(); });
-
   updateUserUI();
 }
 
@@ -675,7 +626,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   loadWishlist();
   setupGlobalEventDelegation();
   initSearch();
-  initCoupon();
   initAuth();
   initNewsletter();
   initCheckout();
@@ -683,7 +633,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   initMobileMenu();
   initSmoothScroll();
   initCTAScroll();
-  initCopyCode();
   initLocationButton();
   renderTestimonials();
 });
