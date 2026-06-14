@@ -38,8 +38,13 @@
   </nav>
 
   <main>
-    <!-- Hero Section -->
+    <!-- Hero Section with Background Video -->
     <section class="hero" id="home">
+      <video class="hero-video" autoplay loop muted playsinline>
+        <!-- Replace with your Cloudinary video URL -->
+        <source src="https://res.cloudinary.com/your-cloud-name/video/upload/vegetables-bg.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
       <div class="hero-overlay"></div>
       <div class="hero-content">
         <div class="hero-text">
@@ -71,18 +76,7 @@
       <div class="product-grid" id="productGrid"></div>
     </section>
 
-    <!-- Promo Banner -->
-    <section class="promo-banner" id="offers">
-      <div class="promo-content">
-        <div class="promo-text">
-          <span class="promo-tag">Limited Time Offer</span>
-          <h3>Flat 20% Off on First Order</h3>
-          <p>Use code: <strong>FRESH20</strong> at checkout</p>
-          <button class="btn-promo" id="copyCodeBtn">Copy Code</button>
-        </div>
-        <div class="promo-badge"><span>🎯</span><div>Free Delivery<br>Above ₹499</div></div>
-      </div>
-    </section>
+    <!-- Promo Banner – REMOVED (no offers) -->
 
     <!-- Why Choose Us -->
     <section class="features">
@@ -134,14 +128,14 @@
     <div class="footer-bottom"><p>&copy; 2026 Green Mart Kakinada</p></div>
   </footer>
 
-  <!-- Cart Drawer -->
+  <!-- Cart Drawer (no coupon row, no discount row) -->
   <div class="cart-drawer" id="cartDrawer">
     <div class="cart-drawer-header">
       <h3>Your Cart <span id="cartDrawerCount">0</span></h3>
       <div><button class="clear-cart-btn" id="clearCartBtn">🗑️ Clear</button><button class="close-drawer" id="closeDrawer">&times;</button></div>
     </div>
     <div class="cart-drawer-items" id="cartDrawerItems"></div>
-    <div class="cart-drawer-coupon"><input type="text" placeholder="Coupon code" id="couponCode"><button id="applyCoupon">Apply</button></div>
+    <!-- coupon row removed -->
     <div class="cart-drawer-details">
       <div class="input-field"><label>Full Name</label><input type="text" id="checkoutName" placeholder="Enter your full name"></div>
       <div class="input-field"><label>Mobile Number</label><input type="tel" id="checkoutMobile" placeholder="10-digit mobile number"></div>
@@ -150,7 +144,7 @@
     <div class="cart-drawer-summary">
       <div class="summary-row">Subtotal: <span id="drawerSubtotal">₹0</span></div>
       <div class="summary-row">Delivery: <span id="drawerDelivery">₹0</span></div>
-      <div class="summary-row discount-row" id="discountRow" style="display:none;">Discount: <span id="drawerDiscount">₹0</span></div>
+      <!-- discount row removed -->
       <div class="summary-row total">Total: <span id="drawerTotal">₹0</span></div>
       <button class="checkout-btn" id="checkoutBtn">Place Order (COD)</button>
       <button class="continue-shopping" id="continueShopping">Continue Shopping</button>
