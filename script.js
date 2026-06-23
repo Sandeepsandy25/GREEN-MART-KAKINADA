@@ -4,6 +4,7 @@
  * No offers/discounts – only price shown.
  * Updated delivery charges: <100=₹50, 100-200=₹30, 200-500=₹20, >=500=Free
  * Flexible quantity: supports 250g (0.25 kg), 500g (0.5 kg), 1kg+, and whole numbers for bunch/piece.
+ * Real images from Cloudinary – using image-urls.js mapping.
  */
 
 let products = [];
@@ -119,11 +120,15 @@ function renderProducts(productArray) {
         <button type="button" class="quick-qty" data-id="${product.id}" data-qty="2">2kg</button>
       </div>
     ` : '';
+    // ✅ Get real image URL from the mapping function
+    const imageUrl = typeof getProductImage === 'function' ? getProductImage(product.id) : product.emoji;
     return `
       <div class="product-card" data-id="${product.id}">
         ${product.bestSeller ? '<div class="product-badge">🔥 Best Seller</div>' : ''}
         <div class="product-image">
-          <div style="font-size:80px; display:flex; align-items:center; justify-content:center; height:220px; background:#f3f4f6;">${product.emoji || '🥗'}</div>
+          <img src="${imageUrl}" 
+               alt="${product.name}" 
+               style="width:100%; height:100%; object-fit:cover; display:block;">
           ${!product.available ? '<div class="out-of-stock">Out of Stock</div>' : ''}
           <div class="wishlist-icon ${wishlist.includes(product.id) ? 'active' : ''}" data-id="${product.id}"><i class="far fa-heart"></i></div>
         </div>
@@ -205,9 +210,13 @@ function updateCartDrawer() {
   drawerItems.innerHTML = cart.map(item => {
     const product = products.find(p => p.id == item.id);
     const unitDisplay = item.unit === 'kg' ? `${item.quantity} kg` : `${Math.round(item.quantity)} ${item.unit}`;
+    // ✅ Get real image for cart
+    const imageUrl = typeof getProductImage === 'function' ? getProductImage(item.id) : (product?.emoji || '🥗');
     return `
       <div class="cart-item" data-id="${item.id}">
-        <div class="cart-item-image">${product?.emoji || '🥗'}</div>
+        <div class="cart-item-image">
+          <img src="${imageUrl}" alt="${item.name}" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">
+        </div>
         <div class="cart-item-details">
           <div class="cart-item-name">${item.name}</div>
           <div class="cart-item-price">₹${item.price} / ${item.unit}</div>
@@ -355,9 +364,13 @@ function showQuickViewModal(product) {
   const isKg = product.unit === 'kg';
   const step = isKg ? '0.1' : '1';
   const min = isKg ? '0.1' : '1';
+  // ✅ Get real image for quick view
+  const imageUrl = typeof getProductImage === 'function' ? getProductImage(product.id) : product.emoji;
   body.innerHTML = `
     <div class="quickview-product">
-      <div class="quickview-image"><div style="font-size:100px;">${product.emoji || '🥗'}</div></div>
+      <div class="quickview-image">
+        <img src="${imageUrl}" alt="${product.name}" style="width:100%; max-width:300px; height:auto; border-radius:16px; display:block; margin:0 auto;">
+      </div>
       <div class="quickview-details">
         <h2>${product.name}</h2>
         <div style="font-size:0.9rem; color:#6B7280;">${product.telugu || ''}</div>
