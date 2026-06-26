@@ -24,16 +24,16 @@
       <div class="nav-actions">
         <button class="nav-icon wishlist-btn"><i class="far fa-heart"></i><span>Wishlist</span></button>
         <button class="nav-icon cart-btn" id="cartBtn"><i class="fas fa-shopping-cart"></i><span>Cart</span><span class="cart-count" id="cartCountDesktop">0</span></button>
-        <button class="nav-icon user-btn" id="userBtn"><i class="far fa-user-circle"></i><span>Account</span></button>
+        <button class="nav-icon user-btn" id="userBtn"><i class="far fa-user-circle"></i><span id="userBtnText">Account</span></button>
       </div>
       <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
     </div>
     <div class="mobile-menu" id="mobileMenu">
       <a href="#home">Home</a><a href="#categories">Categories</a><a href="#products">Products</a>
-      <a href="#offers">Offers</a><a href="#contact">Contact</a>
+      <a href="#offers">Offers</a><a href="#orders">My Orders</a><a href="#contact">Contact</a>
       <button class="mobile-wishlist"><i class="far fa-heart"></i> Wishlist</button>
       <button class="mobile-cart"><i class="fas fa-shopping-cart"></i> Cart</button>
-      <button class="mobile-user"><i class="far fa-user-circle"></i> Account</button>
+      <button class="mobile-user" id="mobileUserBtn"><i class="far fa-user-circle"></i> Account</button>
     </div>
   </nav>
 
@@ -41,7 +41,6 @@
     <!-- Hero Section with Background Video -->
     <section class="hero" id="home">
       <video class="hero-video" autoplay loop muted playsinline>
-        <!-- Replace with your Cloudinary video URL -->
         <source src="https://res.cloudinary.com/dahh1ibxe/video/upload/v1781322945/PROMOTIONAL_VIDEO_PROMPT__klcuu1.mp4" type="video/mp4">
         Your browser does not support the video tag.
       </video>
@@ -75,8 +74,6 @@
       <div class="section-header"><h2>Today's <span>Fresh Picks</span></h2><p>Handpicked for you from local farms</p></div>
       <div class="product-grid" id="productGrid"></div>
     </section>
-
-    <!-- Promo Banner – REMOVED (no offers) -->
 
     <!-- Why Choose Us -->
     <section class="features">
@@ -117,7 +114,7 @@
 
   <footer class="footer">
     <div class="footer-grid">
-      <div class="footer-col"><h4>Quick Links</h4><ul><li><a href="#home">Home</a></li><li><a href="#categories">Shop</a></li><li><a href="#products">Products</a></li><li><a href="#offers">Offers</a></li></ul></div>
+      <div class="footer-col"><h4>Quick Links</h4><ul><li><a href="#home">Home</a></li><li><a href="#categories">Shop</a></li><li><a href="#products">Products</a></li><li><a href="#orders">My Orders</a></li></ul></div>
       <div class="footer-col"><h4>Contact Us</h4><ul><li><i class="fas fa-phone"></i> +91 90007 93333</li><li><i class="fas fa-envelope"></i> support@greenmart.com</li><li><i class="fas fa-map-marker-alt"></i> Kakinada, AP</li></ul></div>
       <div class="footer-col"><h4>Follow Us</h4><div class="social-links"><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-facebook"></i></a><a href="#"><i class="fab fa-whatsapp"></i></a></div></div>
       <div class="footer-col"><h4>Admin</h4><a href="#" class="admin-link" id="adminLoginFooter">🔐 Admin Login</a></div>
@@ -128,14 +125,13 @@
     <div class="footer-bottom"><p>&copy; 2026 Green Mart Kakinada</p></div>
   </footer>
 
-  <!-- Cart Drawer (no coupon row, no discount row) -->
+  <!-- Cart Drawer -->
   <div class="cart-drawer" id="cartDrawer">
     <div class="cart-drawer-header">
       <h3>Your Cart <span id="cartDrawerCount">0</span></h3>
       <div><button class="clear-cart-btn" id="clearCartBtn">🗑️ Clear</button><button class="close-drawer" id="closeDrawer">&times;</button></div>
     </div>
     <div class="cart-drawer-items" id="cartDrawerItems"></div>
-    <!-- coupon row removed -->
     <div class="cart-drawer-details">
       <div class="input-field"><label>Full Name</label><input type="text" id="checkoutName" placeholder="Enter your full name"></div>
       <div class="input-field"><label>Mobile Number</label><input type="tel" id="checkoutMobile" placeholder="10-digit mobile number"></div>
@@ -144,7 +140,6 @@
     <div class="cart-drawer-summary">
       <div class="summary-row">Subtotal: <span id="drawerSubtotal">₹0</span></div>
       <div class="summary-row">Delivery: <span id="drawerDelivery">₹0</span></div>
-      <!-- discount row removed -->
       <div class="summary-row total">Total: <span id="drawerTotal">₹0</span></div>
       <button class="checkout-btn" id="checkoutBtn">Place Order (COD)</button>
       <button class="continue-shopping" id="continueShopping">Continue Shopping</button>
@@ -160,24 +155,140 @@
     </div>
   </div>
 
-  <!-- Account Modal -->
+  <!-- ===== UPDATED: ACCOUNT MODAL (User Login + Admin Login Tabs) ===== -->
   <div id="accountModal" class="modal">
-    <div class="modal-content" style="max-width:350px;">
-      <span class="close-modal">&times;</span>
-      <h3>Account</h3>
-      <div>
-        <p><strong>Customer Login</strong></p>
-        <input type="email" id="customerEmailInput" placeholder="your@email.com" style="width:100%; padding:10px; margin:10px 0; border-radius:40px; border:1px solid #ccc;">
-        <button id="customerLoginBtn" class="btn-primary" style="width:100%; margin-bottom:15px;">Customer Login</button>
-        <hr>
-        <button id="adminLoginBtn" class="btn-secondary" style="width:100%; margin-top:10px; background:#1f2937; color:white;">🔐 Admin Login</button>
+    <div class="modal-content account-modal-content">
+      <span class="close-modal" id="closeAccountModal">&times;</span>
+      
+      <!-- Tabs -->
+      <div class="account-tabs">
+        <button class="account-tab active" data-tab="user-login">User Login</button>
+        <button class="account-tab" data-tab="admin-login">Admin Login</button>
       </div>
+
+      <!-- ===== USER LOGIN TAB ===== -->
+      <div id="tab-user-login" class="account-tab-panel active-panel">
+        <!-- Guest Mode (when not logged in) -->
+        <div id="userGuestView">
+          <div style="text-align:center; padding:8px 0;">
+            <div style="font-size:40px; margin-bottom:8px;">👤</div>
+            <h3>Welcome Guest</h3>
+            <p style="color:var(--gray-text); font-size:0.85rem;">Sign in to track orders & get offers</p>
+          </div>
+          <form id="userLoginForm" style="margin-top:12px;">
+            <div class="input-field">
+              <label>Email Address</label>
+              <input type="email" id="userLoginEmail" placeholder="your@email.com" required>
+            </div>
+            <div class="input-field">
+              <label>Password</label>
+              <input type="password" id="userLoginPassword" placeholder="Enter password" required>
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%;">Sign In</button>
+            <div id="userLoginError" class="auth-error" style="display:none;"></div>
+          </form>
+          <div style="text-align:center; margin-top:12px; font-size:0.85rem;">
+            <span style="color:var(--gray-text);">New user? </span>
+            <button id="showSignupBtn" style="background:none; border:none; color:var(--primary-green); font-weight:600; cursor:pointer;">Create Account</button>
+          </div>
+          <hr style="margin:12px 0;">
+          <button id="continueAsGuestBtn" class="btn-secondary" style="width:100%; background:#f3f4f6; color:#1f2937; border:1px solid #e5e7eb;">Continue as Guest</button>
+        </div>
+
+        <!-- Sign Up View (hidden by default) -->
+        <div id="userSignupView" style="display:none;">
+          <div style="text-align:center; padding:8px 0;">
+            <div style="font-size:40px; margin-bottom:8px;">📝</div>
+            <h3>Create Account</h3>
+          </div>
+          <form id="userSignupForm" style="margin-top:12px;">
+            <div class="input-field">
+              <label>Full Name</label>
+              <input type="text" id="userSignupName" placeholder="Your full name">
+            </div>
+            <div class="input-field">
+              <label>Email Address</label>
+              <input type="email" id="userSignupEmail" placeholder="your@email.com" required>
+            </div>
+            <div class="input-field">
+              <label>Password</label>
+              <input type="password" id="userSignupPassword" placeholder="Min 6 characters" required minlength="6">
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%;">Create Account</button>
+            <div id="userSignupError" class="auth-error" style="display:none;"></div>
+          </form>
+          <div style="text-align:center; margin-top:12px; font-size:0.85rem;">
+            <span style="color:var(--gray-text);">Already have an account? </span>
+            <button id="showLoginBtn" style="background:none; border:none; color:var(--primary-green); font-weight:600; cursor:pointer;">Sign In</button>
+          </div>
+        </div>
+
+        <!-- Logged In View (user is logged in) -->
+        <div id="userLoggedInView" style="display:none;">
+          <div style="display:flex; align-items:center; gap:16px;">
+            <div style="font-size:48px; background:var(--light-green); width:70px; height:70px; border-radius:50%; display:flex; align-items:center; justify-content:center;">👤</div>
+            <div>
+              <h3 id="accountUserName">User</h3>
+              <p id="accountUserEmail" style="color:var(--gray-text); font-size:0.9rem;"></p>
+            </div>
+          </div>
+          <hr style="margin:12px 0;">
+          <button id="viewOrdersBtn" class="btn-primary" style="width:100%; margin-bottom:8px;">📋 My Orders</button>
+          <button id="accountLogoutBtn" class="logout-btn" style="width:100%;">Logout</button>
+        </div>
+      </div>
+
+      <!-- ===== ADMIN LOGIN TAB ===== -->
+      <div id="tab-admin-login" class="account-tab-panel">
+        <div style="text-align:center; padding:8px 0;">
+          <div style="font-size:40px; margin-bottom:8px;">🔐</div>
+          <h3>Admin Login</h3>
+          <p style="color:var(--gray-text); font-size:0.85rem;">Access the admin dashboard</p>
+        </div>
+        <form id="adminLoginForm" style="margin-top:12px;">
+          <div class="input-field">
+            <label>Admin Email</label>
+            <input type="email" id="adminLoginEmail" placeholder="admin@greenmart.com" required>
+          </div>
+          <div class="input-field">
+            <label>Password</label>
+            <input type="password" id="adminLoginPassword" placeholder="Enter password" required>
+          </div>
+          <button type="submit" class="btn-primary" style="width:100%;">Login as Admin</button>
+          <div id="adminLoginError" class="auth-error" style="display:none;"></div>
+        </form>
+        <div style="text-align:center; margin-top:12px; font-size:0.8rem; color:var(--gray-text);">
+          <i class="fas fa-shield-alt"></i> Only authorized admins can access this section.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ORDERS MODAL ===== -->
+  <div id="ordersModal" class="modal">
+    <div class="modal-content orders-modal-content">
+      <span class="close-modal" id="closeOrdersModal">&times;</span>
+      <h3>My Orders</h3>
+      <div id="ordersList" style="max-height:400px; overflow-y:auto;">
+        <p style="text-align:center; color:var(--gray-text); padding:20px;">Loading orders...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== NOTIFICATION PERMISSION TOAST ===== -->
+  <div id="notificationPrompt" class="notification-prompt" style="display:none;">
+    <div class="notification-prompt-content">
+      <span>🔔 Get order updates & offers</span>
+      <button id="enableNotificationsBtn">Enable</button>
+      <button id="dismissNotificationsBtn">Later</button>
     </div>
   </div>
 
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js"></script>
 
   <!-- Firebase config -->
   <script>
@@ -191,11 +302,11 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    const auth = firebase.auth();
+    const messaging = firebase.messaging();
   </script>
 
-  <!-- ✅ Image URLs mapping (must be loaded before script.js) -->
   <script src="image-urls.js"></script>
-
   <script src="script.js"></script>
 </body>
 </html>
