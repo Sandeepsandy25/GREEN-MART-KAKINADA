@@ -242,7 +242,7 @@ document.getElementById('adminLoginForm')?.addEventListener('submit', async (e) 
       errorEl.textContent = 'Unauthorized: No admin role found.';
       return;
     }
-    window.location.href = 'admin-login.html';
+    window.location.href = 'dashboard.html';
   } catch (err) {
     errorEl.style.display = 'block';
     errorEl.textContent = err.message;
